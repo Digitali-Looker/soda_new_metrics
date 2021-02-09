@@ -100,9 +100,5 @@ view: paneldata {
     drill_fields: []
   }
 
-  measure: streams {
-    type: sum
-    sql: ${weights.weight} ;;
-  }
 
 }

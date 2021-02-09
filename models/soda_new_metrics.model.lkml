@@ -9,7 +9,7 @@ datagroup: soda_new_metrics_default_datagroup {
 persist_with: soda_new_metrics_default_datagroup
 
 
-include: "/*/*"
+include: "/[!model]*/*"
 
 
 
