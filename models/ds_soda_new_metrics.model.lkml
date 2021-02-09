@@ -12,7 +12,7 @@ persist_with: ds_soda_new_metrics_default_datagroup
 
 
 explore:  ds_paneldata {
- from: paneldata
+ from: ds_paneldata_ext
  label: "Test Explore for New Metrics DS version"
 
 join: metadata {
