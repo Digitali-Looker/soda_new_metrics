@@ -3,6 +3,12 @@ connection: "soda_new_metrics"
 
 include: "/[!model]*/*"
 
+datagroup: ds_soda_new_metrics_default_datagroup {
+  # sql_trigger: SELECT MAX(id) FROM etl_log;;
+  max_cache_age: "1 hour"
+}
+
+persist_with: ds_soda_new_metrics_default_datagroup
 
 
 explore:  ds_paneldata {
