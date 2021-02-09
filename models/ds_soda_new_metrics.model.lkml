@@ -21,5 +21,9 @@ join: metadata {
   ##coalesce above will allow titles that don't have episode info in API yet to at least provide title link, can be excluded by adding sql_always_where in the model
 }
 
+join: weights_streams_ext {
+  relationship: many_to_one
+  sql_on: ${ds_paneldata.rid}=${weights_streams_ext.rid} and ${ds_paneldata.dateviewed_date}=${weights_streams_ext.dateofactivity_date} ;;
+}
 
 }

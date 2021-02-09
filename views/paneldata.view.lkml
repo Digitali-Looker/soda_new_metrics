@@ -2,6 +2,8 @@ view: paneldata {
   sql_table_name: "CORE"."PANELDATA"
     ;;
 
+    view_label: "PANELDATA"
+
   dimension: bookmark_mins {
     type: number
     sql: ${TABLE}."BOOKMARK_MINS" ;;

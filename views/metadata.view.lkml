@@ -2,6 +2,8 @@ view: metadata {
   sql_table_name: "CORE"."METADATA"
     ;;
 
+  view_label: "METADATA"
+
   dimension: image {
     type: string
     sql: ${TABLE}."IMAGE" ;;

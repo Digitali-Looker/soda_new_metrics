@@ -2,6 +2,8 @@ view: weights {
   sql_table_name: "CORE"."WEIGHTS"
     ;;
 
+  view_label: "WEIGHTS"
+
   dimension_group: dateofactivity {
     type: time
     timeframes: [
