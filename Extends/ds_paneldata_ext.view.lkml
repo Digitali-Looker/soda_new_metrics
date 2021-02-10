@@ -18,7 +18,7 @@ view: ds_paneldata_ext {
 
 
 #####################################################################################################################################################
-##    FILTERS
+##    FILTERS & params
 
 
 
@@ -30,6 +30,18 @@ view: ds_paneldata_ext {
 ${dateviewed_raw}
 {% endcondition %} ;;
  }
+
+parameter: reach_account_granularity {
+  default_value: "rid"
+  allowed_value: {
+    label: "Profile"
+    value: "profile"
+  }
+  allowed_value: {
+    label: "Account"
+    value: "rid"
+  }
+}
 
 ##
 #####################################################################################################################################################
@@ -108,7 +120,12 @@ measure: Reach {
   value_format: "# ### ### ##0\" K\""
   type: sum_distinct
   # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
-  sql_distinct_key: concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${weights_reach.dateofactivity});;
+  sql_distinct_key:
+  {% if reach_account_granularity._parameter_value == 'profile' %}
+  concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${weights_reach.dateofactivity})
+  {% else %}
+  concat_ws(', ',${weights_reach.rid},${weights_reach.dateofactivity})
+  {% endif %};;
   sql: ${weight_for_reach} ;;
 }
 
