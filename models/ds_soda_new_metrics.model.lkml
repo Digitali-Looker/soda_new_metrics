@@ -25,7 +25,14 @@ join: metadata {
 
 join: ds_weights_streams_ext {
   relationship: many_to_one
-  sql_on: ${ds_paneldata.rid}=${ds_weights_streams_ext.rid} and ${ds_paneldata.dateviewed_date}=${ds_weights_streams_ext.dateofactivity_date} ;;
+ # sql_on: ${ds_paneldata.rid}=${ds_weights_streams_ext.rid} and ${ds_paneldata.dateviewed_date}=${ds_weights_streams_ext.dateofactivity_date} ;;
+  foreign_key: ds_paneldata.FK_Weights_Streams
 }
+
+  join: ds_weights_reach_ext {
+    relationship: many_to_one
+    # sql_on: ${ds_paneldata.rid}=${ds_weights_streams_ext.rid} and ${ds_paneldata.dateviewed_date}=${ds_weights_streams_ext.dateofactivity_date} ;;
+    foreign_key: ds_paneldata.FK_Weights_Reach
+  }
 
 }

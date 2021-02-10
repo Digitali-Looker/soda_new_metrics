@@ -107,4 +107,11 @@ dimension: FK_Metadata {
   hidden: yes
 }
 
+  dimension: FK_Weights_Streams {
+    sql: concat_ws(', ', ${rid}, ${dateviewed_date}) ;;
+    hidden: yes
+  }
+
+
+
 }

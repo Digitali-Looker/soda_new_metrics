@@ -4,9 +4,23 @@ view: ds_paneldata_ext {
   extends: [paneldata]
   view_label: "PANELDATA"
 
+#####################################################################################################################################################
+##    AMENDMENTS OF BASE VIEW DIMENSIONS
+
+
+
   dimension_group: dateviewed {
     can_filter: no
   }
+
+##
+#####################################################################################################################################################
+
+
+#####################################################################################################################################################
+##    FILTERS
+
+
 
  filter: date_viewed {
   type: date
@@ -15,6 +29,14 @@ view: ds_paneldata_ext {
 ${dateviewed_raw}
 {% endcondition %} ;;
  }
+
+##
+#####################################################################################################################################################
+
+
+
+#####################################################################################################################################################
+## SAMPLE DATE AND REACH JOIN DIMENSIONS
 
   measure: sample_date_m {
     type: date
@@ -48,4 +70,37 @@ ${dateviewed_raw}
     when ${sample_date_d}<{% date_start date_viewed %} then {% date_start date_viewed %}
     when ${sample_date_d}>={% date_end date_viewed %} then {% date_end date_viewed %} end;;
   }
+
+
+dimension: weight_for_reach {
+  type: number
+  sql: ${ds_weights_reach_ext.weight} ;;
+}
+
+  dimension: FK_Weights_Reach {
+    sql: concat_ws(', ', ${rid}, ${sample_date_d_final}) ;;
+    hidden: yes
+  }
+
+##
+#####################################################################################################################################################
+
+
+#####################################################################################################################################################
+##
+
+measure: Streams {
+  value_format: "# ### ### ##0\" K\""
+  type: sum
+  sql: ${ds_weights_streams_ext.weight} ;;
+}
+
+measure: Reach {
+  value_format: "# ### ### ##0\" K\""
+  type: sum_distinct
+  # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
+  sql_distinct_key: concat_ws(', ',${rid},${sample_date_d_final}) ;;
+  sql: ${weight_for_reach} ;;
+}
+
 }
