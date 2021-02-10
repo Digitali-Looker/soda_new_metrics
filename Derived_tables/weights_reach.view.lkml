@@ -32,7 +32,7 @@ view: weights_reach {
   }
 
   dimension: demoid {
-    hidden: yes
+    hidden: no
   }
 
   dimension: weight {
