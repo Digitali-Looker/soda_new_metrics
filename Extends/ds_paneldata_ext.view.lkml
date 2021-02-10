@@ -25,6 +25,7 @@ view: ds_paneldata_ext {
  filter: date_viewed {
   type: date
    suggest_dimension: dateviewed_raw
+   default_value: " < (TO_TIMESTAMP('2021-01-01'))"
    sql: {% condition date_viewed %}
 ${dateviewed_raw}
 {% endcondition %} ;;
@@ -57,30 +58,38 @@ ${dateviewed_raw}
       dateadd(day,-1,dateadd(month,1,(date_trunc(month,${dateviewed_raw}))))
       {% elsif dateviewed_week._is_selected %}
       dateadd(day,-1,dateadd(week,1,(date_trunc(week,${dateviewed_raw}))))
-      {%else%}
+      {% elsif dateviewed_date._is_selected %}
       ${dateviewed_date}
+      {% else %}
+      {% date_end date_viewed %}
       {% endif %};;
     hidden: yes
   }
 
+## This is correction for when max date of a date part (week, quarter etc) is outside the filter, to not show 0 it will take either end of the filter
   dimension: sample_date_d_final {
     type: date
     label: "Sample Date Dimension"
     sql: case when {% condition date_viewed %} ${sample_date_d} {% endcondition %} then ${sample_date_d}
     when ${sample_date_d}<{% date_start date_viewed %} then {% date_start date_viewed %}
-    when ${sample_date_d}>={% date_end date_viewed %} then {% date_end date_viewed %} end;;
+    when ${sample_date_d}>={% date_end date_viewed %} then dateadd(day,-1,{% date_end date_viewed %}) end;;
   }
 
 
 dimension: weight_for_reach {
   type: number
-  sql: ${ds_weights_reach_ext.weight} ;;
+  sql: ${weights_reach.weight} ;;
 }
 
-  dimension: FK_Weights_Reach {
-    sql: concat_ws(', ', ${rid}, ${sample_date_d_final}) ;;
+  dimension: FK_Weights_Reach_full {
+    sql: concat_ws(', ', ${rid}, ${profileid},${sample_date_d_final}) ;;
     hidden: yes
   }
+
+  # dimension: FK_Weights_Reach_no_date {
+  #   sql:concat_ws(', ', ${rid}, ${profileid});;
+  #   hidden: yes
+  # }
 
 ##
 #####################################################################################################################################################
@@ -99,7 +108,7 @@ measure: Reach {
   value_format: "# ### ### ##0\" K\""
   type: sum_distinct
   # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
-  sql_distinct_key: concat_ws(', ',${rid},${sample_date_d_final}) ;;
+  sql_distinct_key: concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${weights_reach.dateofactivity});;
   sql: ${weight_for_reach} ;;
 }
 
