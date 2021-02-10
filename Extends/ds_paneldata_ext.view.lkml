@@ -51,13 +51,13 @@ parameter: reach_account_granularity {
 #####################################################################################################################################################
 ## SAMPLE DATE AND REACH JOIN DIMENSIONS
 
-  measure: sample_date_m {
-    type: date
-    label: "sample date"
-    description: "max_date within selection"
-    sql:
-    max(${dateviewed_date}) ;;
-  }
+  # measure: sample_date_m {
+  #   type: date
+  #   label: "sample date"
+  #   description: "max_date within selection"
+  #   sql:
+  #   max(${dateviewed_date}) ;;
+  # }
 
   dimension: sample_date_d {
     type: date
@@ -71,6 +71,8 @@ parameter: reach_account_granularity {
       {% elsif dateviewed_week._is_selected %}
       dateadd(day,-1,dateadd(week,1,(date_trunc(week,${dateviewed_raw}))))
       {% elsif dateviewed_date._is_selected %}
+      ${dateviewed_date}
+      {% elsif dateviewed_time._is_selected %}
       ${dateviewed_date}
       {% else %}
       {% date_end date_viewed %}
