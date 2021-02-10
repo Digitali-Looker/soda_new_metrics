@@ -102,5 +102,9 @@ view: paneldata {
     drill_fields: []
   }
 
+dimension: FK_Metadata {
+  sql: coalesce(${episodeid},${netflixid}) ;;
+  hidden: yes
+}
 
 }

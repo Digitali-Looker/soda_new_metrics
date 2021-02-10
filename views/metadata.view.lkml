@@ -90,4 +90,9 @@ view: metadata {
     type: count
     drill_fields: [nftitlename, nfepisodename]
   }
+
+  dimension: PK {
+    sql: coalesce(${nfepisodeid},${nftitleid}) ;;
+    primary_key: yes
+  }
 }
