@@ -27,11 +27,14 @@ ${dateviewed_raw}
   dimension: sample_date_d {
     type: date_raw
     label: "SAMPLE date DIMENSION"
+    view_label: "PANELDATA"
     description: "max_date within selection"
-    sql:
-      {% if dateviewed_year._is_selected %}
+    sql:{% if dateviewed_year._is_selected %}
       date_trunc(year,${dateviewed_date})
+      {%else%}
+      ${dateviewed_date}
       {% endif %};;
+    hidden: no
   }
 
 
