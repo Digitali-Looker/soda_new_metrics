@@ -93,22 +93,14 @@ dimension: weight_for_reach {
   sql: ${weights_reach.weight} ;;
 }
 
-  # dimension: FK_Weights_Reach_full {
-  #   sql: concat_ws(', ', ${rid}, ${profileid},${sample_date_d_final}) ;;
-  #   hidden: yes
-  # }
 
-  # dimension: FK_Weights_Reach_no_date {
-  #   sql:concat_ws(', ', ${rid}, ${profileid});;
-  #   hidden: yes
-  # }
 
 ##
 #####################################################################################################################################################
 
 
 #####################################################################################################################################################
-##
+##    MEASURES
 
 measure: Streams {
   value_format: "# ### ### ##0\" K\""
@@ -130,3 +122,15 @@ measure: Reach {
 }
 
 }
+
+
+
+  # dimension: FK_Weights_Reach_full {
+  #   sql: concat_ws(', ', ${rid}, ${profileid},${sample_date_d_final}) ;;
+  #   hidden: yes
+  # }
+
+  # dimension: FK_Weights_Reach_no_date {
+  #   sql:concat_ws(', ', ${rid}, ${profileid});;
+  #   hidden: yes
+  # }
