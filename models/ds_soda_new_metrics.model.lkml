@@ -14,7 +14,7 @@ persist_with: ds_soda_new_metrics_default_datagroup
 explore:  ds_paneldata {
  from: ds_paneldata_ext
  label: "Test Explore for New Metrics DS version"
- sql_always_where: ${ds_weights_streams_ext.rid} is not null ;;
+sql_always_where: ${rid} in (select distinct rid from core.weights);;
 
 join: metadata {
   relationship: many_to_one
@@ -31,12 +31,12 @@ join: ds_weights_streams_ext {
 
 
 
-    join: weights_reach {
-    relationship: many_to_one
-    sql_on:
-    concat_ws(', ',${ds_paneldata.rid},${ds_paneldata.profileid},${ds_paneldata.sample_date_d_final})=
-    concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${weights_reach.dateofactivity}) ;;
-  }
+  join: weights_reach {
+  relationship: many_to_one
+  sql_on:
+  concat_ws(', ',${ds_paneldata.rid},${ds_paneldata.profileid},${ds_paneldata.sample_date_d_final})=
+  concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${weights_reach.dateofactivity}) ;;
+}
 
 join: demoinfo {
   relationship: many_to_one
