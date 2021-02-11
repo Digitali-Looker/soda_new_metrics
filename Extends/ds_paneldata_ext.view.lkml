@@ -1,5 +1,9 @@
 include: "/[!model]*/*"
 
+#####################################################################################################################################################
+##This view is the extension of the base paneldata view.
+##Most calculations are to be written here to avoid invoking simmetric aggregate where possible (will still have to kick in for reach because of the nature of that measure)
+
 view: ds_paneldata_ext {
   extends: [paneldata]
   view_label: "PANELDATA"
@@ -8,7 +12,9 @@ view: ds_paneldata_ext {
 ##    AMENDMENTS OF BASE VIEW DIMENSIONS
 
 
-
+#----------Disable filtering of dateviewed field that comes in varius date groups - this is to be replaced with a separate date filter, so
+#---that all filtering happens on a single field that's then referenced acrossed the model, this solves the issue we had in Netflix_int
+#---where putting date_week or any other extension that date_date breaks some calculations cause only date_date is mentioned in derived tables and calcs
   dimension_group: dateviewed {
     can_filter: no
   }
@@ -21,7 +27,7 @@ view: ds_paneldata_ext {
 ##    FILTERS & params
 
 
-
+###------Simple filter for date - limit to day level, sql consition means that user input is applied to the field dateviewed
  filter: date_viewed {
   type: date
    suggest_dimension: dateviewed_raw
@@ -30,6 +36,7 @@ view: ds_paneldata_ext {
     {% endcondition %};;
  }
 
+###----This is the parameter for 2 ways of calculating Reach, Reach is written in the way that
 parameter: reach_account_granularity {
   # default_value: "rid"
   allowed_value: {
@@ -43,7 +50,6 @@ parameter: reach_account_granularity {
 }
 
 parameter: average_by {
-  default_value: ""
   allowed_value: {
     label: "Episode"
     value: "episode"
@@ -218,7 +224,7 @@ measure: Reach {
 ##but that viewing was from outside the sample as 0, hence cutting the totals by quite a lot
 ##as this happens cause of the calculation taking into account rows originating from paneldata, I've added a couple of conditions below (Avg_Reach)
 ##If the whole sum comes base as 0 it nulls it, if only part of the components (some days when averaged by day but we're looking at total number)
-##come back as 0s then we just need to adjust the denominator (so it does't take into account the unique identifier for those rows)
+##come back as 0s then we just need to adjust the denominator (so it does't take into account the unique identifier(avg_breakdown_by) for those rows)
 
 
   measure: Avg_Reach_Account {
@@ -245,11 +251,18 @@ measure: Reach {
   measure: Avg_Reach {
     value_format: "# ### ### ##0\" K\""
     type: number
-    sql: {% if reach_account_granularity._parameter_value == "'profile'" %}
-   case when count(weights_reach.rid)  = 0 then null else ${Avg_Reach_Profile}/count(distinct (case when weights_reach.rid is null then null else ${avg_breakdown_by} end)) end
+    sql:
+    {% if average_by._is_selected %}
+                {% if reach_account_granularity._parameter_value == "'profile'" %}
+               case when count(weights_reach.rid)  = 0 then null else ${Avg_Reach_Profile}/count(distinct (case when weights_reach.rid is null then null else ${avg_breakdown_by} end)) end
+                {% else %}
+                case when count(weights_reach.rid)  = 0 then null else ${Avg_Reach_Account}/count(distinct (case when weights_reach.rid is null then null else ${avg_breakdown_by} end) ) end
+                {% endif %}
     {% else %}
-    case when count(weights_reach.rid)  = 0 then null else ${Avg_Reach_Account}/count(distinct (case when weights_reach.rid is null then null else ${avg_breakdown_by} end) ) end
-    {% endif %};;
+    1
+    {% endif %}
+    ;;
+    html: {% if average_by._is_selected %} {{rendered_value}} {% else %} Please add an averaging parameter {% endif %}  ;;
   }
 
 
