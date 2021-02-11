@@ -42,6 +42,21 @@ parameter: reach_account_granularity {
   }
 }
 
+parameter: average_by {
+  default_value: ""
+  allowed_value: {
+    label: "Episode"
+    value: "episode"
+  }
+}
+
+dimension: test {
+sql: {% if average_by._parameter_value == "'episode'" %} concat_ws(', ',metadata.nftitleid, metadata.nfseasonnumber, metadata.nfepisodenumber)
+{% else %}  {% endif %}
+;;
+}
+
+
 ##
 #####################################################################################################################################################
 
@@ -116,6 +131,10 @@ measure: Streams {
   sql: ${ds_weights_streams_ext.weight} ;;
 }
 
+
+
+#-----------------REACH
+
 measure: Reach_Account {
   value_format: "# ### ### ##0\" K\""
   type: sum_distinct
@@ -144,6 +163,8 @@ measure: Reach {
   # html: {{value}} {{reach_account_granularity._parameter_value}} ;; ##This is just to check if liquid picks up the param value, for some reason it needed both sets of quotes around the value, which is weird
 }
 
+#------------------------------
+
   measure: sample_size {
     type: number
     label: "Sample size (Reach)"
@@ -152,9 +173,39 @@ measure: Reach {
     html: {% if {{value}} < 5 %} {{rendered_value}} Low Sample! {% else %} {{rendered_value}} {% endif %};;
 }
 
+#-----------------------------AVERAGE REACH
+
+  measure: Avg_Reach_Account {
+    value_format: "# ### ### ##0\" K\""
+    type: sum_distinct
+    # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
+    sql_distinct_key:
+      concat_ws(', ',${weights_reach.rid},${weights_reach.dateofactivity},${test});;
+    sql: ${weight_for_reach} ;;
+    hidden: yes
+  }
 
 
+  measure: Avg_Reach_Profile {
+    value_format: "# ### ### ##0\" K\""
+    type: sum_distinct
+    # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
+    sql_distinct_key:
+      concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${weights_reach.dateofactivity},${test});;
+    sql: ${weight_for_reach} ;;
+    hidden: yes
+  }
 
+  measure: Avg_Reach {
+    value_format: "# ### ### ##0\" K\""
+    type: number
+    sql: {% if reach_account_granularity._parameter_value == "'profile'" %} ${Avg_Reach_Profile} {% else %} ${Avg_Reach_Account} {% endif %}
+    / count(distinct ${test});;
+    # html: {{value}} {{reach_account_granularity._parameter_value}} ;; ##This is just to check if liquid picks up the param value, for some reason it needed both sets of quotes around the value, which is weird
+  }
+
+
+#----------------------------------------------
 
 ##
 #####################################################################################################################################################
