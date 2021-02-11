@@ -38,6 +38,11 @@ join: ds_weights_streams_ext {
     concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${weights_reach.dateofactivity}) ;;
   }
 
+join: demoinfo {
+  relationship: many_to_one
+  foreign_key: ds_paneldata.rid
+}
+
 }
 
 

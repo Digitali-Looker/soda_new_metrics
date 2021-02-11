@@ -117,7 +117,7 @@ measure: Reach_Account {
   sql_distinct_key:
   concat_ws(', ',${weights_reach.rid},${weights_reach.dateofactivity});;
   sql: ${weight_for_reach} ;;
-  # hidden: yes
+  hidden: yes
 }
 
 
@@ -128,7 +128,7 @@ measure: Reach_Account {
     sql_distinct_key:
       concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${weights_reach.dateofactivity});;
     sql: ${weight_for_reach} ;;
-    # hidden: yes
+    hidden: yes
   }
 
 measure: Reach {
