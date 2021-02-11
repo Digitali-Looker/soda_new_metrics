@@ -14,7 +14,10 @@ persist_with: ds_soda_new_metrics_default_datagroup
 explore:  ds_paneldata {
  from: ds_paneldata_ext
  label: "Test Explore for New Metrics DS version"
-sql_always_where: ${rid} in (select distinct rid from core.weights);;
+sql_always_where: ${rid} in (select distinct rid from core.weights)
+and ${dateviewed_date}>= '{{ _user_attributes['soda_new_metrics_date_start'] }}'
+and ${dateviewed_date}< '{{ _user_attributes['soda_new_metrics_date_end'] }}'
+;;
 
 join: metadata {
   relationship: many_to_one
