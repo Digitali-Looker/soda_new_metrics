@@ -23,9 +23,11 @@ view: paneldata {
       week,
       month,
       quarter,
+      quarter_of_year,
       year
     ]
     sql: ${TABLE}."DATEVIEWED" ;;
+    # allow_fill: no
   }
 
   dimension: devicetype {

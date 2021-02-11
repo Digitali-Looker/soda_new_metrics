@@ -48,10 +48,50 @@ parameter: average_by {
     label: "Episode"
     value: "episode"
   }
+  allowed_value: {
+    label: "Season"
+    value: "season"
+  }
+  allowed_value: {
+    label: "Title"
+    value: "title"
+  }
+  allowed_value: {
+    label: "Year"
+    value: "year"
+  }
+  allowed_value: {
+    label: "Year & Quarter"
+    value: "year_quarter"
+  }
+  allowed_value: {
+    label: "Quarter"
+    value: "quarter"
+  }
+  allowed_value: {
+    label: "Month"
+    value: "month"
+  }
+  allowed_value: {
+    label: "Week"
+    value: "week"
+  }
+  allowed_value: {
+    label: "Day"
+    value: "day"
+  }
 }
 
 dimension: test {
 sql: {% if average_by._parameter_value == "'episode'" %} concat_ws(', ',metadata.nftitleid, metadata.nfseasonnumber, metadata.nfepisodenumber)
+{% elsif average_by._parameter_value == "'season'" %} concat_ws(', ',metadata.nftitleid, metadata.nfseasonnumber)
+{% elsif average_by._parameter_value == "'title'" %} concat_ws(', ',metadata.nftitleid)
+{% elsif average_by._parameter_value == "'year'" %} concat_ws(', ',year(dateviewed))
+{% elsif average_by._parameter_value == "'year_quarter'" %} concat_ws(', ',date_trunc('quarter',dateviewed))
+{% elsif average_by._parameter_value == "'quarter'" %} concat_ws(', ',quarter(dateviewed))
+{% elsif average_by._parameter_value == "'month'" %} concat_ws(', ',month(dateviewed))
+{% elsif average_by._parameter_value == "'week'" %} concat_ws(', ',date_trunc('week',dateviewed))
+{% elsif average_by._parameter_value == "'day'" %} concat_ws(', ',to_date(dateviewed))
 {% else %}  {% endif %}
 ;;
 }
@@ -174,6 +214,11 @@ measure: Reach {
 }
 
 #-----------------------------AVERAGE REACH
+#### By defaul average reach calculation counts cases where there was some viewing on the date (week/title whatever),
+##but that viewing was from outside the sample as 0, hence cutting the totals by quite a lot
+##as this happens cause of the calculation taking into account rows originating from paneldata, I've added a couple of conditions below (Avg_Reach)
+##inste
+
 
   measure: Avg_Reach_Account {
     value_format: "# ### ### ##0\" K\""
@@ -192,16 +237,18 @@ measure: Reach {
     # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
     sql_distinct_key:
       concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${weights_reach.dateofactivity},${test});;
-    sql: ${weight_for_reach} ;;
+    sql: ${weight_for_reach};;
     hidden: yes
   }
 
   measure: Avg_Reach {
     value_format: "# ### ### ##0\" K\""
     type: number
-    sql: {% if reach_account_granularity._parameter_value == "'profile'" %} ${Avg_Reach_Profile} {% else %} ${Avg_Reach_Account} {% endif %}
-    / count(distinct ${test});;
-    # html: {{value}} {{reach_account_granularity._parameter_value}} ;; ##This is just to check if liquid picks up the param value, for some reason it needed both sets of quotes around the value, which is weird
+    sql: {% if reach_account_granularity._parameter_value == "'profile'" %}
+   case when count(weights_reach.rid)  = 0 then null else ${Avg_Reach_Profile}/count(distinct (case when weights_reach.rid is null then null else ${test} end)) end
+    {% else %}
+    case when count(weights_reach.rid)  = 0 then null else ${Avg_Reach_Account}/count(distinct (case when weights_reach.rid is null then null else ${test} end) ) end
+    {% endif %};;
   }
 
 
