@@ -144,6 +144,30 @@ measure: Reach {
   # html: {{value}} {{reach_account_granularity._parameter_value}} ;; ##This is just to check if liquid picks up the param value, for some reason it needed both sets of quotes around the value, which is weird
 }
 
+  measure: sample_size {
+    type: number
+    label: "Sample size (Reach)"
+    description: "Number of Households involved in Reach calculation"
+    sql: count(distinct ${weights_reach.rid}) ;;
+    html: {% if {{value}} < 5 %} {{rendered_value}} Low Sample! {% else %} {{rendered_value}} {% endif %};;
+}
+
+
+
+
+
+##
+#####################################################################################################################################################
+
+
+
+#####################################################################################################################################################
+##     DIMENSIONS
+
+
+
+
+
 
 }
 
