@@ -82,7 +82,7 @@ parameter: average_by {
   }
 }
 
-dimension: test {
+dimension: avg_breakdown_by {
 sql: {% if average_by._parameter_value == "'episode'" %} concat_ws(', ',metadata.nftitleid, metadata.nfseasonnumber, metadata.nfepisodenumber)
 {% elsif average_by._parameter_value == "'season'" %} concat_ws(', ',metadata.nftitleid, metadata.nfseasonnumber)
 {% elsif average_by._parameter_value == "'title'" %} concat_ws(', ',metadata.nftitleid)
@@ -217,7 +217,8 @@ measure: Reach {
 #### By defaul average reach calculation counts cases where there was some viewing on the date (week/title whatever),
 ##but that viewing was from outside the sample as 0, hence cutting the totals by quite a lot
 ##as this happens cause of the calculation taking into account rows originating from paneldata, I've added a couple of conditions below (Avg_Reach)
-##inste
+##If the whole sum comes base as 0 it nulls it, if only part of the components (some days when averaged by day but we're looking at total number)
+##come back as 0s then we just need to adjust the denominator (so it does't take into account the unique identifier for those rows)
 
 
   measure: Avg_Reach_Account {
@@ -225,7 +226,7 @@ measure: Reach {
     type: sum_distinct
     # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
     sql_distinct_key:
-      concat_ws(', ',${weights_reach.rid},${weights_reach.dateofactivity},${test});;
+      concat_ws(', ',${weights_reach.rid},${weights_reach.dateofactivity},${avg_breakdown_by});;
     sql: ${weight_for_reach} ;;
     hidden: yes
   }
@@ -236,7 +237,7 @@ measure: Reach {
     type: sum_distinct
     # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
     sql_distinct_key:
-      concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${weights_reach.dateofactivity},${test});;
+      concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${weights_reach.dateofactivity},${avg_breakdown_by});;
     sql: ${weight_for_reach};;
     hidden: yes
   }
@@ -245,9 +246,9 @@ measure: Reach {
     value_format: "# ### ### ##0\" K\""
     type: number
     sql: {% if reach_account_granularity._parameter_value == "'profile'" %}
-   case when count(weights_reach.rid)  = 0 then null else ${Avg_Reach_Profile}/count(distinct (case when weights_reach.rid is null then null else ${test} end)) end
+   case when count(weights_reach.rid)  = 0 then null else ${Avg_Reach_Profile}/count(distinct (case when weights_reach.rid is null then null else ${avg_breakdown_by} end)) end
     {% else %}
-    case when count(weights_reach.rid)  = 0 then null else ${Avg_Reach_Account}/count(distinct (case when weights_reach.rid is null then null else ${test} end) ) end
+    case when count(weights_reach.rid)  = 0 then null else ${Avg_Reach_Account}/count(distinct (case when weights_reach.rid is null then null else ${avg_breakdown_by} end) ) end
     {% endif %};;
   }
 
