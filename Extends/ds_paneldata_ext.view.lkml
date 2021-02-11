@@ -119,6 +119,18 @@ sql: {% if average_by._parameter_value == "'episode'" %} concat_ws(', ',metadata
 #####################################################################################################################################################
 ## SAMPLE DATE AND REACH JOIN DIMENSIONS
 
+##----One of the most important elements of the new methodology is a sample date for Reach, it should be dynamic to represent the end of the period
+##----for each part of the breakdown, but it can't be a measure, because one measure (Reach) can't reference another measure, a measure also can't be used in join
+
+##----The solution- keep it dimensional, since the main Reach logic doesn't depend on what breakdowns are thrown to it, the only set of scenarios we need to
+##----consider is whether we take a differnt sample date for each year in the breakdown or whether we use a single date (weights are then fixed at high, not cool)
+
+##---so the only breakdown that matters is by date variations (MAKE SURE IF YOU ADD ANY MORE TIMEFRAMES FOR DATEVIEWED TO REPRESENT THEM HERE)
+##---this means we can write the logic for each scenario
+##---even better, cause our logic is always latest date within the period - ie last day of year, month, week etc, we can calculate them detached from what dates have actually been viewed
+##---so for each row with it's date we'd determine this date's relative last day of year/month/week etc by a simple sequence of
+##--- take the date (ie 11/02/20), truncate to desired level (01/01/2020 for year), add 1 to the level (+1 year => 01/01/2021) and take away 1 day (31/12/20)
+##---example for month will be (11/02/20), truncate to month (01/02/2020), add 1 to the level (+1 month => 01/03/20) and take away 1 day (29/02/20)
 
 
   dimension: sample_date_d {
@@ -126,7 +138,7 @@ sql: {% if average_by._parameter_value == "'episode'" %} concat_ws(', ',metadata
     label: "testing field"
     sql: {% if dateviewed_year._is_selected %}
       dateadd(day,-1,dateadd(year,1,(date_trunc(year,${dateviewed_raw}))))
-      {% elsif dateviewed_quarter._is_selected %}
+      {% elsif dateviewed_quarter._is_selected or dateviewed_quarter_of_year._is_selected %}
       dateadd(day,-1,dateadd(quarter,1,(date_trunc(quarter,${dateviewed_raw}))))
       {% elsif dateviewed_month._is_selected %}
       dateadd(day,-1,dateadd(month,1,(date_trunc(month,${dateviewed_raw}))))
@@ -141,6 +153,17 @@ sql: {% if average_by._parameter_value == "'episode'" %} concat_ws(', ',metadata
       {% endif %};;
     hidden: yes
   }
+
+
+
+##------on the previous step you must have wondered "what about today for instance" 11/02/21 would take us to 31/12/21 for end of year which is in the future
+##----so we need to adjust the sample date to always sit within the extremes of either available data (user attributes) or a selection driven by the data filter
+##----below looks at whether filter is applied (in which case boundaries are set by filter
+##---- if its not applied then boundaries are determined by user attributes (important to keep admin up to date for all client users!)
+##----the logic is simple - if sample date calculated above is cool with the boundaries, just take it, if it's before start date - overwrite it with
+##-- the start date (of user attributes or filter respectively),
+##-- same for if sample date is on or after then end date - overwrite with end date
+
 
 ## This is correction for when max date of a date part (week, quarter etc) is outside the filter, to not show 0 it will take either end of the filter
   dimension: sample_date_d_final {
@@ -158,7 +181,7 @@ sql: {% if average_by._parameter_value == "'episode'" %} concat_ws(', ',metadata
     ;;
   }
 
-
+##----This is just for easier referencing, so that don't have to type in view name all the time
 dimension: weight_for_reach {
   type: number
   sql: ${weights_reach.weight} ;;
@@ -173,6 +196,9 @@ dimension: weight_for_reach {
 #####################################################################################################################################################
 ##    MEASURES
 
+
+##---Streams is as simle as summarizing the weights of the original base view (extended in case we need to add any decorative fields)
+##---As it's joined on rid, date there should be no ambiguity
 measure: Streams {
   value_format: "# ### ### ##0\" K\""
   type: sum
