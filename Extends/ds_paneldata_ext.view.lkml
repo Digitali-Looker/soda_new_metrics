@@ -25,7 +25,6 @@ view: ds_paneldata_ext {
  filter: date_viewed {
   type: date
    suggest_dimension: dateviewed_raw
-  # default_value: "<'{{ _user_attributes[''soda_new_metrics_date_end''] }}'"
    sql: {% condition date_viewed %}
     ${dateviewed_raw}
     {% endcondition %};;
@@ -75,7 +74,7 @@ parameter: reach_account_granularity {
       {% elsif dateviewed_time._is_selected %}
       ${dateviewed_date}
       {% else %}
-      {% date_end date_viewed %}
+      {% if date_viewed._is_filtered %} {% date_end date_viewed %} {% else %} '{{ _user_attributes['soda_new_metrics_date_end'] }}' {% endif %}
       {% endif %};;
     hidden: yes
   }
@@ -84,10 +83,16 @@ parameter: reach_account_granularity {
   dimension: sample_date_d_final {
     type: date
     label: "Sample Date Dimension"
-    sql:
+    sql:{% if date_viewed._is_filtered %}
     case when {% condition date_viewed %} ${sample_date_d} {% endcondition %} then ${sample_date_d}
     when ${sample_date_d}<{% date_start date_viewed %} then {% date_start date_viewed %}
-    when ${sample_date_d}>={% date_end date_viewed %} then dateadd(day,-1,{% date_end date_viewed %}) end  ;;
+    when ${sample_date_d}>={% date_end date_viewed %} then dateadd(day,-1,{% date_end date_viewed %}) end
+    {% else %}
+    case when ${sample_date_d}< '{{ _user_attributes['soda_new_metrics_date_start'] }}' then '{{ _user_attributes['soda_new_metrics_date_start'] }}'
+    when ${sample_date_d}>='{{ _user_attributes['soda_new_metrics_date_end'] }}' then dateadd(day,-1,'{{ _user_attributes['soda_new_metrics_date_end'] }}')
+    else ${sample_date_d} end
+    {% endif %}
+    ;;
   }
 
 
