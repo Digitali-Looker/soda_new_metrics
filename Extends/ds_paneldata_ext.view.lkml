@@ -36,7 +36,8 @@ view: ds_paneldata_ext {
     {% endcondition %};;
  }
 
-###----This is the parameter for 2 ways of calculating Reach, Reach is written in the way that
+###----This is the parameter for 2 ways of calculating Reach,
+##-----Reach is written in the way that by default it calcs on an account level, but adding this switch allows to chage to profile and back
 parameter: reach_account_granularity {
   # default_value: "rid"
   allowed_value: {
@@ -49,6 +50,9 @@ parameter: reach_account_granularity {
   }
 }
 
+
+#####-----These are parameters for averaging available to the user, we can add more - they will need to be referenced in a avg_breakdown_by dimension
+##----- that provides the list of fields to add to sql_distinct_key for the main calc
 parameter: average_by {
   allowed_value: {
     label: "Episode"
@@ -88,6 +92,10 @@ parameter: average_by {
   }
 }
 
+###------Very important - this needs to be consistent with the list of allowed values in the parameter above
+##-------Note how date fields need to be descriptive of the level - quarter is Q1,Q2 etc, whereas Year&Quarter is 2020-Q1, 2020-Q2 etc
+##-----This field is referenced in Avg_Reach calculations below to provide a unique identifier for each level of detail that sum_distinct will rely on
+##-----in addition to main fields of rid, [profileid], sampledate
 dimension: avg_breakdown_by {
 sql: {% if average_by._parameter_value == "'episode'" %} concat_ws(', ',metadata.nftitleid, metadata.nfseasonnumber, metadata.nfepisodenumber)
 {% elsif average_by._parameter_value == "'season'" %} concat_ws(', ',metadata.nftitleid, metadata.nfseasonnumber)
@@ -111,13 +119,7 @@ sql: {% if average_by._parameter_value == "'episode'" %} concat_ws(', ',metadata
 #####################################################################################################################################################
 ## SAMPLE DATE AND REACH JOIN DIMENSIONS
 
-  # measure: sample_date_m {
-  #   type: date
-  #   label: "sample date"
-  #   description: "max_date within selection"
-  #   sql:
-  #   max(${dateviewed_date}) ;;
-  # }
+
 
   dimension: sample_date_d {
     type: date
