@@ -18,11 +18,11 @@ view: weights {
     sql: ${TABLE}."DATEOFACTIVITY" ;;
   }
 
-  dimension: demoid {
-    type: number
-    value_format_name: id
-    sql: ${TABLE}."DEMOID" ;;
-  }
+  # dimension: demoid {
+  #   type: number
+  #   value_format_name: id
+  #   sql: ${TABLE}."DEMOID" ;;
+  # }
 
   dimension: loadid {
     type: number

@@ -6,7 +6,6 @@ view: weights_reach {
       p.PROFILEID,
       w.DATEOFACTIVITY,
       w.LOADID,
-      w.DEMOID,
       w.WEIGHT
     FROM core.WEIGHTS w
     LEFT JOIN (SELECT DISTINCT rid, profileid FROM core.PANELDATA) p
@@ -31,9 +30,9 @@ view: weights_reach {
     hidden: yes
   }
 
-  dimension: demoid {
-    hidden: no
-  }
+  # dimension: demoid {
+  #   hidden: no
+  # }
 
   dimension: weight {
     type: number
