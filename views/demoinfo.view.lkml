@@ -1,6 +1,7 @@
 view: demoinfo {
   sql_table_name: "CORE"."DEMOINFO"
     ;;
+  view_label: "DEMO INFO"
 
   dimension: demoid {
     type: number

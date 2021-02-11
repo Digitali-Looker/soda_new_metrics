@@ -14,7 +14,7 @@ persist_with: ds_soda_new_metrics_default_datagroup
 explore:  ds_paneldata {
  from: ds_paneldata_ext
  label: "Test Explore for New Metrics DS version"
-
+ sql_always_where: ${ds_weights_streams_ext.rid} is not null ;;
 
 join: metadata {
   relationship: many_to_one
