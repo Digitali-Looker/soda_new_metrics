@@ -53,6 +53,7 @@ parameter: reach_account_granularity {
 
 #####-----These are parameters for averaging available to the user, we can add more - they will need to be referenced in a avg_breakdown_by dimension
 ##----- that provides the list of fields to add to sql_distinct_key for the main calc
+
 parameter: average_by {
   allowed_value: {
     label: "Episode"
@@ -279,21 +280,18 @@ measure: Reach {
   measure: Avg_Reach {
     value_format: "# ### ### ##0\" K\""
     type: number
-    sql:
-    {% if average_by._is_selected %}
+    sql: {% if average_by._is_filtered %}
                 {% if reach_account_granularity._parameter_value == "'profile'" %}
                case when count(weights_reach.rid)  = 0 then null else ${Avg_Reach_Profile}/count(distinct (case when weights_reach.rid is null then null else ${avg_breakdown_by} end)) end
                 {% else %}
                 case when count(weights_reach.rid)  = 0 then null else ${Avg_Reach_Account}/count(distinct (case when weights_reach.rid is null then null else ${avg_breakdown_by} end) ) end
                 {% endif %}
-    {% else %}
-    1
-    {% endif %}
+        {% else %}
+        1
+        {% endif %}
     ;;
-    html: {% if average_by._is_selected %} {{rendered_value}} {% else %} Please add an averaging parameter {% endif %}  ;;
+     html: {% if average_by._is_filtered %} {{rendered_value}} {% else %} Please add an averaging parameter {% endif %}  ;;
   }
-
-
 #----------------------------------------------
 
 ##
