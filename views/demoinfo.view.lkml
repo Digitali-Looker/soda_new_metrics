@@ -14,11 +14,13 @@ view: demoinfo {
     value_format_name: id
     sql: ${TABLE}."RID" ;;
     primary_key: yes
+    hidden: yes
   }
 
   measure: count {
     type: count
     drill_fields: []
+    hidden: yes
   }
 
 }

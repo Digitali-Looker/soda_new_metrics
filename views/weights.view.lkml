@@ -16,6 +16,7 @@ view: weights {
       year
     ]
     sql: ${TABLE}."DATEOFACTIVITY" ;;
+    hidden: yes
   }
 
   # dimension: demoid {
@@ -28,21 +29,25 @@ view: weights {
     type: number
     value_format_name: id
     sql: ${TABLE}."LOADID" ;;
+    hidden: yes
   }
 
   dimension: rid {
     type: number
     value_format_name: id
     sql: ${TABLE}."RID" ;;
+    hidden: yes
   }
 
   dimension: weight {
     type: number
     sql: ${TABLE}."WEIGHT" ;;
+    label: "Streams Weight"
   }
 
   measure: count {
     type: count
     drill_fields: []
+    hidden: yes
   }
 }
