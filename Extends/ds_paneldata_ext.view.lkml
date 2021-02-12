@@ -208,6 +208,8 @@ dimension: weight_for_reach {
 ##---As it's joined on rid, date there should be no ambiguity
 measure: Streams {
   view_label: "CALCULATIONS"
+  group_label: "STREAMS"
+  label: "Streams"
   value_format: "# ### ### ##0\" K\""
   type: sum
   sql: ${ds_weights_streams_ext.weight} ;;
@@ -250,6 +252,7 @@ measure: Reach_Account {
 ##--If the parameter is set to profile reach will refer to Reach_Profile, in all other cases (including when parameter is not selected at all it will go to account lvl)
 measure: Reach {
   view_label: "CALCULATIONS"
+  group_label: "REACH"
   value_format: "# ### ### ##0\" K\""
   type: number
   sql: {% if reach_account_granularity._parameter_value == "'profile'" %} ${Reach_Profile} {% else %} ${Reach_Account} {% endif %} ;;
@@ -307,6 +310,7 @@ measure: Reach {
 
   measure: Avg_Reach {
     view_label: "CALCULATIONS"
+    group_label: "REACH"
     value_format: "# ### ### ##0\" K\""
     type: number
     sql: {% if average_by._is_filtered %}
@@ -335,6 +339,7 @@ measure: Reach {
 
 measure: Avg_Streams {
   view_label: "CALCULATIONS"
+  group_label: "STREAMS"
   type: number
   value_format: "# ### ### ##0\" K\""
   sql: ${Streams}/count(distinct ${avg_breakdown_by}) ;;
@@ -360,6 +365,7 @@ html: {% if metadata.nftitlename._is_selected or metadata.nftitleid._is_selected
 
 measure: avg_viewing_rate {
   view_label: "CALCULATIONS"
+  group_label: "TIME VIEWED"
   label: "Average Viewing Rate %"
   type: average
   value_format: "0.00%"
@@ -369,6 +375,7 @@ measure: avg_viewing_rate {
 
 measure: total_minutes {
   view_label: "CALCULATIONS"
+  group_label: "TIME VIEWED"
   label: "Total Minutes Viewed"
   type: sum
   value_format: "# ### ### ##0\" K mins\""
@@ -378,6 +385,7 @@ measure: total_minutes {
 
 measure: average_minutes{
   view_label: "CALCULATIONS"
+  group_label: "TIME VIEWED"
   label: "Average Minutes"
   html: {% if average_by._is_filtered %} {{rendered_value}} {% else %} Please add an averaging parameter {% endif %}  ;;
   type: number
@@ -398,6 +406,7 @@ measure: average_minutes{
 
 measure: avg_000s {
   view_label: "CALCULATIONS"
+  group_label: "TIME VIEWED"
   label: "Average Minute Audience Size"
   description: "This measure is similar to TV's average 000s and represents the audience size on an average minute of the content.
   As this measure is tied to available content durations captured by the viewing file, it is most relevant to content-based analysis.
