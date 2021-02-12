@@ -102,11 +102,12 @@ view: paneldata {
     hidden: yes
   }
 
-  dimension: viewig_rate {
-    type: number
-    sql: ${TABLE}."VIEWIG_RATE" ;;
-    hidden: yes
-  }
+  # dimension: viewig_rate {
+  #   type: number
+  #   sql: ${TABLE}."VIEWIG_RATE" ;;
+  #   hidden: yes
+  # }
+  ##This calculation doesn't take into consideration to bring bookmark value that exceeds duration to duration value
 
   dimension: vieworder {
     type: number

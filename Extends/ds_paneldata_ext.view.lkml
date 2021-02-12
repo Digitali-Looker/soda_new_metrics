@@ -29,6 +29,7 @@ view: ds_paneldata_ext {
 
 ###------Simple filter for date - limit to day level, sql consition means that user input is applied to the field dateviewed
  filter: date_viewed {
+  view_label: "CALCULATIONS"
   type: date
    suggest_dimension: dateviewed_raw
    sql: {% condition date_viewed %}
@@ -39,6 +40,7 @@ view: ds_paneldata_ext {
 ###----This is the parameter for 2 ways of calculating Reach,
 ##-----Reach is written in the way that by default it calcs on an account level, but adding this switch allows to chage to profile and back
 parameter: reach_account_granularity {
+  view_label: "CALCULATIONS"
   # default_value: "rid"
   allowed_value: {
     label: "Profile"
@@ -55,6 +57,7 @@ parameter: reach_account_granularity {
 ##----- that provides the list of fields to add to sql_distinct_key for the main calc
 
 parameter: average_by {
+  view_label: "CALCULATIONS"
   allowed_value: {
     label: "Episode"
     value: "episode"
@@ -109,6 +112,7 @@ sql: {% if average_by._parameter_value == "'episode'" %} concat_ws(', ',metadata
 {% elsif average_by._parameter_value == "'day'" %} concat_ws(', ',to_date(dateviewed))
 {% else %}  {% endif %}
 ;;
+hidden: yes
 }
 
 
@@ -135,8 +139,8 @@ sql: {% if average_by._parameter_value == "'episode'" %} concat_ws(', ',metadata
 
 
   dimension: sample_date_d {
+    view_label: "CALCULATIONS"
     type: date
-    label: "testing field"
     sql: {% if dateviewed_year._is_selected %}
       dateadd(day,-1,dateadd(year,1,(date_trunc(year,${dateviewed_raw}))))
       {% elsif dateviewed_quarter._is_selected or dateviewed_quarter_of_year._is_selected %}
@@ -168,6 +172,7 @@ sql: {% if average_by._parameter_value == "'episode'" %} concat_ws(', ',metadata
 
 ## This is correction for when max date of a date part (week, quarter etc) is outside the filter, to not show 0 it will take either end of the filter
   dimension: sample_date_d_final {
+    view_label: "CALCULATIONS"
     type: date
     label: "Sample Date Dimension"
     sql:{% if date_viewed._is_filtered %}
@@ -184,6 +189,7 @@ sql: {% if average_by._parameter_value == "'episode'" %} concat_ws(', ',metadata
 
 ##----This is just for easier referencing, so that don't have to type in view name all the time
 dimension: weight_for_reach {
+  hidden: yes
   type: number
   sql: ${weights_reach.weight} ;;
 }
@@ -201,10 +207,12 @@ dimension: weight_for_reach {
 ##---Streams is as simle as summarizing the weights of the original base view (extended in case we need to add any decorative fields)
 ##---As it's joined on rid, date there should be no ambiguity
 measure: Streams {
+  view_label: "CALCULATIONS"
   value_format: "# ### ### ##0\" K\""
   type: sum
   sql: ${ds_weights_streams_ext.weight} ;;
 }
+
 
 
 
@@ -241,6 +249,7 @@ measure: Reach_Account {
 
 ##--If the parameter is set to profile reach will refer to Reach_Profile, in all other cases (including when parameter is not selected at all it will go to account lvl)
 measure: Reach {
+  view_label: "CALCULATIONS"
   value_format: "# ### ### ##0\" K\""
   type: number
   sql: {% if reach_account_granularity._parameter_value == "'profile'" %} ${Reach_Profile} {% else %} ${Reach_Account} {% endif %} ;;
@@ -253,6 +262,7 @@ measure: Reach {
 ##---If the figure is less then 5 print not just value, but also a warning
 ##---5 is a demo value, real threshold will need determining based on real sample with real weights
   measure: sample_size {
+    view_label: "CALCULATIONS"
     type: number
     label: "Sample size (Reach)"
     description: "Number of Households involved in Reach calculation"
@@ -296,6 +306,7 @@ measure: Reach {
   }
 
   measure: Avg_Reach {
+    view_label: "CALCULATIONS"
     value_format: "# ### ### ##0\" K\""
     type: number
     sql: {% if average_by._is_filtered %}
@@ -323,16 +334,20 @@ measure: Reach {
 ######--------------AVERAGE STREAMS
 
 measure: Avg_Streams {
+  view_label: "CALCULATIONS"
   type: number
   value_format: "# ### ### ##0\" K\""
   sql: ${Streams}/count(distinct ${avg_breakdown_by}) ;;
+  html: {% if average_by._is_filtered %} {{rendered_value}} {% else %} Please add an averaging parameter {% endif %}  ;;
   label: "Average Streams"
+  description: "Average number of Streams by selected averaging parameter"
 }
 
 
 ######--------------NUMBER OF DISTINCT EPISODES
 
 measure: episodes_num {
+  view_label: "CALCULATIONS"
 sql: count(distinct concat_ws(', ',metadata.nftitleid, metadata.nfseasonnumber, metadata.nfepisodenumber)) ;;
 label: "Number of Episodes viewed"
 value_format: "0"
@@ -343,20 +358,60 @@ html: {% if metadata.nftitlename._is_selected or metadata.nftitleid._is_selected
 
 ######-------------MINUTES RELATED METRICS
 
+measure: avg_viewing_rate {
+  view_label: "CALCULATIONS"
+  label: "Average Viewing Rate %"
+  type: average
+  value_format: "0.00%"
+  sql: ${bookmark_mins}/${duration_mins};;
+  description: "What % of available duration is completed within a viewing session on average"
+}
+
+measure: total_minutes {
+  view_label: "CALCULATIONS"
+  label: "Total Minutes Viewed"
+  type: sum
+  value_format: "# ### ### ##0\" K mins\""
+  sql: ${bookmark_mins}*${ds_weights_streams_ext.weight} ;;
+  description: "Total number of weighted minutes"
+}
+
+measure: average_minutes{
+  view_label: "CALCULATIONS"
+  label: "Average Minutes"
+  html: {% if average_by._is_filtered %} {{rendered_value}} {% else %} Please add an averaging parameter {% endif %}  ;;
+  type: number
+  value_format: "# ### ### ##0\" K mins\""
+  sql: ${total_minutes}/count(distinct ${avg_breakdown_by})  ;;
+  description: "Average number of weighted minutes by selected averaging parameter (similar to average streams)"
+}
+
+# measure: average_minutes_per_hh {
+#   label: "Average Minutes per Account"
+#   html: {% if average_by._is_filtered %} {{rendered_value}} {% else %} Please add an averaging parameter {% endif %}  ;;
+#   type: number
+#   value_format: "# ### ### ##0\" K mins\""
+#   sql: ${average_minutes}/count(distinct ds_weights_streams_ext.rid) ;;
+# }
+####----Not sure about this one, think its only going to confuse things
 
 
+measure: avg_000s {
+  view_label: "CALCULATIONS"
+  label: "Average Minute Audience Size"
+  description: "This measure is similar to TV's average 000s and represents the audience size on an average minute of the content.
+  As this measure is tied to available content durations captured by the viewing file, it is most relevant to content-based analysis.
+  This field doesn't require an averaging parameter."
+  type: sum
+  sql: (${bookmark_mins}*${ds_weights_streams_ext.weight})/${duration_mins} ;;
+  value_format: "# ### ### ##0\" K\""
+}
 
 
 #----------------------------------------------
 
 ##
 #####################################################################################################################################################
-
-
-
-#####################################################################################################################################################
-##     DIMENSIONS
-
 
 
 
