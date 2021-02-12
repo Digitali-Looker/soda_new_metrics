@@ -210,6 +210,13 @@ measure: Streams {
 
 #-----------------REACH
 
+##-----Below calculations for Reach consist of 3 parts: 1 calculates Reach for account level, one - for Profile level,
+##-----and third is just a shell that decides which one to use depending on the parameter value
+
+
+###----for account level we sum weights of distinct pairs respondantid+sampledate (sample_date = dateofctivity brought through from weights_reach table)
+###----so this will allows us to avoid double-counting weights and as sample weight calculation is dynamic, the date breakdown will affect Reach accordingly
+
 measure: Reach_Account {
   value_format: "# ### ### ##0\" K\""
   type: sum_distinct
@@ -220,7 +227,7 @@ measure: Reach_Account {
   hidden: yes
 }
 
-
+####----Same logic as above, except we add one more partitioning field - Profileid. So for each profile within the HH the weight will be counted once more
   measure: Reach_Profile {
     value_format: "# ### ### ##0\" K\""
     type: sum_distinct
@@ -231,6 +238,8 @@ measure: Reach_Account {
     hidden: yes
   }
 
+
+##--If the parameter is set to profile reach will refer to Reach_Profile, in all other cases (including when parameter is not selected at all it will go to account lvl)
 measure: Reach {
   value_format: "# ### ### ##0\" K\""
   type: number
@@ -240,6 +249,9 @@ measure: Reach {
 
 #------------------------------
 
+##---For sample size we just count how many distict rids our join of the weight table for reach has brought through
+##---If the figure is less then 5 print not just value, but also a warning
+##---5 is a demo value, real threshold will need determining based on real sample with real weights
   measure: sample_size {
     type: number
     label: "Sample size (Reach)"
@@ -248,13 +260,19 @@ measure: Reach {
     html: {% if {{value}} < 5 %} {{rendered_value}} Low Sample! {% else %} {{rendered_value}} {% endif %};;
 }
 
-#-----------------------------AVERAGE REACH
-#### By defaul average reach calculation counts cases where there was some viewing on the date (week/title whatever),
-##but that viewing was from outside the sample as 0, hence cutting the totals by quite a lot
-##as this happens cause of the calculation taking into account rows originating from paneldata, I've added a couple of conditions below (Avg_Reach)
-##If the whole sum comes base as 0 it nulls it, if only part of the components (some days when averaged by day but we're looking at total number)
-##come back as 0s then we just need to adjust the denominator (so it does't take into account the unique identifier(avg_breakdown_by) for those rows)
 
+#-----------------------------AVERAGE REACH
+###---Average reach basically follows same logic as normal reach (that is summing weights for distinct values of specified sets of fields)
+##----except it needs to be calculated not at levels determined by what fields are in the data table, but at levels specified by a user in a parameter
+##--- so apart from our normal rid, [profileid], sampledate we might want to add netflixid & seasonnumber for season level reach calculation,
+##----or month of date-of-viewing for Reach pre-calculated for individual months
+###----these pre-calculated values then need to be averaged across if the data table configuration is at a broader level
+##----imagine you look at year by year and want to see an average monthly reach for each year
+##----below avg_reach_account and avg_reach_profile measure will precalculate reach values for each individual month within the selection
+##----the avg_reach measure will then average across these values for each year in the table by dividing the sum of reach figures for every month by a number of those months
+##----to avoid writing a million scenarios for each averaging parameter within a mesure, they are all pre-configured by the Avg_Reach_Profile dimension described at the top
+##----so that dimension not only determines what are the fields to take into consideration when pre-calculating reach for selected level, but also
+##----how many distinct values there are that this sum needs to be divided by
 
   measure: Avg_Reach_Account {
     value_format: "# ### ### ##0\" K\""
@@ -292,6 +310,43 @@ measure: Reach {
     ;;
      html: {% if average_by._is_filtered %} {{rendered_value}} {% else %} Please add an averaging parameter {% endif %}  ;;
   }
+
+####---------Why all the additional case when above?
+#### By defaul average reach calculation counts cases where there was some viewing on the date (week/title whatever),
+##but that viewing was from outside the sample as 0, hence cutting the totals by quite a lot
+##as this happens cause of the calculation taking into account rows originating from paneldata, I've added a couple of conditions below (Avg_Reach)
+##If the whole sum comes base as 0 it nulls it, if only part of the components (some days when averaged by day but we're looking at total number)
+##come back as 0s then we just need to adjust the denominator (so it does't take into account the unique identifier(avg_breakdown_by) for those rows)
+
+
+
+######--------------AVERAGE STREAMS
+
+measure: Avg_Streams {
+  type: number
+  value_format: "# ### ### ##0\" K\""
+  sql: ${Streams}/count(distinct ${avg_breakdown_by}) ;;
+  label: "Average Streams"
+}
+
+
+######--------------NUMBER OF DISTINCT EPISODES
+
+measure: episodes_num {
+sql: count(distinct concat_ws(', ',metadata.nftitleid, metadata.nfseasonnumber, metadata.nfepisodenumber)) ;;
+label: "Number of Episodes viewed"
+value_format: "0"
+type: number
+html: {% if metadata.nftitlename._is_selected or metadata.nftitleid._is_selected %} {{rendered_value}} {% else %} Please add title and/or titleid field {% endif %};;
+}
+
+
+######-------------MINUTES RELATED METRICS
+
+
+
+
+
 #----------------------------------------------
 
 ##

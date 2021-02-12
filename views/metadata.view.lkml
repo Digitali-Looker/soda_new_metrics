@@ -64,6 +64,8 @@ view: metadata {
     type: string
     sql: ${TABLE}."NFTITLENAME" ;;
     label: "Title Name"
+    required_fields: [nftitleid]
+    ## This will always force an id in, so that titles with the same name don't end up merging values!
   }
 
   dimension: nfvideotype {
