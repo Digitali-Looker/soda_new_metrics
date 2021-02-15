@@ -1,39 +1,32 @@
+include: "/[!model]*/*"
+
 view: date_first_viewed {
   derived_table: {
-explore_source: ds_metadata_only{
-column: nftitleid {field:nftitleid}
-column: nfepisodeid {field:nfepisodeid}
-column: nfseasonnumber {field:nfseasonnumber}
-column: nfepisodenumber {field:nfepisodenumber}
-# column: account_country {} ## to be added when have more than 1 country
-column: countryviewed {field:paneldata.countryviewed}
-column: dateviewed {field:paneldata.dateviewed_date}
-derived_column: min_date {
-  sql: min(dateviewed) over (partition by
-  nftitleid,
-  {% if nfseasonnumber._is_selected or ds_metadata_ext.content_name_granularity._parameter_value == "'season'" %} nfseasonnumber {% esle %} 1 {% endif %},
-  {% if nfepisodenumber._is_selected or ds_metadata_ext.content_name_granularity._parameter_value == "'episode'" %} nfepisodenumber {% esle %} 1 {% endif %},
-  {% if paneldata.countryviewed._is_selected %} countryviewed {% esle %} 1 {% endif %}
-  ) ;;
-}
-
-bind_filters: {
-  from_field: ds_paneldata_ext.countryviewed
-  to_field: countryviewed
-}
-}
-  }
-  dimension: nftitleid {
-    hidden: yes
+    sql:SELECT distinct
+        m.NFTITLEID,
+        m.NFEPISODEID,
+        m.NFSEASONNUMBER,
+        m.NFEPISODENUMBER,
+        p.COUNTRYVIEWED ,
+        min(to_date(p.DATEVIEWED)) OVER (PARTITION BY
+        m.NFTITLEID,
+        {% if metadata.nfseasonnumber._is_selected or metadata.content_name_granularity._parameter_value == "'season'" %} m.NFSEASONNUMBER {% else %} 1 {% endif %},
+        {% if metadata.nfepisodenumber._is_selected or metadata.content_name_granularity._parameter_value == "'episode'" %} m.NFEPISODENUMBER {% else %} 1 {% endif %},
+        {% if ds_paneldata.countryviewed._is_selected %} p.COUNTRYVIEWED {% else %} 1 {% endif %}
+        ) date_first_viewed
+        FROM
+        core.METADATA m
+        LEFT JOIN core.PANELDATA p ON COALESCE (m.NFEPISODEID,m.NFTITLEID) = COALESCE (p.EPISODEID , p.NETFLIXID)
+        {% if ds_paneldata.countryviewed._is_filtered %}
+        WHERE {% condition ds_paneldata.countryviewed %} p.COUNTRYVIEWED  {% endcondition %}
+        {% endif %};;
   }
 
-  dimension: nfepisodeid {
-    hidden: yes
-  }
-
-  dimension: min_date {
-    view_label: "METADATA"
-    label: "Date First Viewed"
+  dimension: nftitleid { hidden:yes}
+  dimension: nfepisodeid { hidden:yes}
+  dimension: countryviewed {hidden:yes}
+  dimension: date_first_viewed {
     type: date
+    view_label: "CALCULATIONS"
   }
-  }
+}

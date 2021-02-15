@@ -64,38 +64,10 @@ join: demoinfo {
   foreign_key: ds_paneldata.rid
 }
 
-# join: date_first_viewed {
-#   sql_on:  ;;
-# }
-
+join: date_first_viewed {
+  sql_on: coalesce(${ds_paneldata.episodeid},${ds_paneldata.netflixid})=coalesce(${date_first_viewed.nfepisodeid},${date_first_viewed.nftitleid})
+  {% if ds_paneldata.countryviewed._is_selected %} and ${ds_paneldata.countryviewed}=${date_first_viewed.countryviewed} {% endif %} ;;
+  relationship: many_to_one
 }
 
-
-explore: ds_metadata_only {
-  from: ds_metadata_ext
-
-  join: paneldata {
-    relationship: one_to_many
-    sql_on: coalesce(${ds_metadata_only.nfepisodeid},${ds_metadata_only.nftitleid})=coalesce(${paneldata.episodeid},${paneldata.netflixid}) ;;
-  }
-
 }
-
-
-
-  # join: ds_weights_reach_ext {
-  #   relationship: many_to_one
-  #   # sql_on: ${ds_paneldata.rid}=${ds_weights_streams_ext.rid} and ${ds_paneldata.dateviewed_date}=${ds_weights_streams_ext.dateofactivity_date} ;;
-  #   foreign_key: ds_paneldata.FK_Weights_Reach
-  # }
-
-  # join: weights_reach {
-  #   relationship: many_to_one
-  #   sql_on: {% if ds_paneldata.sample_date_d_final._in_query %}
-  #   concat_ws(', ',${ds_paneldata.rid},${ds_paneldata.profileid},${ds_paneldata.sample_date_d_final})=
-  #   concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${weights_reach.dateofactivity})
-  #   {% else %}
-  #   concat_ws(', ',${ds_paneldata.rid},${ds_paneldata.profileid},'1')=
-  #   concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},'1')
-  #   {% endif %};;
-  # }
