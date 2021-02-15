@@ -71,3 +71,10 @@ join: date_first_viewed {
 }
 
 }
+
+
+####### -- Notes for the prod version
+#----1) There will be a few more fields to act as partitioning/joining fields, i.e. platformid, countrycode and country of panellist
+#----2) Country of panellist and country code should be combined into 'native' vs 'non-native' viewing by viewing line.
+#----This way there won't be confusion between spanish viewing from uk account or gb viewing from spanish for instance
+#---And for date first viewed this will massively simplify things

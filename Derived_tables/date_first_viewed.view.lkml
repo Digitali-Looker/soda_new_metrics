@@ -1,5 +1,12 @@
 include: "/[!model]*/*"
 
+####### --- Tried writing this as an NDT based off a separate explore that is reliant on metadata and doesn't have any weights joined in
+## however, but that didn't work as this view requires referencing conditions on fields from the main explore
+
+##---much easier is to write as derived table, the min date is calculated based on what field(s) are selected - bare in mind that title-season field has
+## -- required fields that will make below work correctly
+
+
 view: date_first_viewed {
   derived_table: {
     sql:SELECT distinct
