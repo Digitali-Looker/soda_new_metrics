@@ -11,6 +11,7 @@ view: weights_reach {
     LEFT JOIN (SELECT DISTINCT rid, profileid FROM core.PANELDATA) p
     ON w.RID = p.RID
     ;;
+    ######## WHen have more than 1 country, it is to be added as a field and into the join both here and in the model
   }
 
   dimension: rid {

@@ -342,7 +342,7 @@ measure: Avg_Streams {
   group_label: "STREAMS"
   type: number
   value_format: "# ### ### ##0\" K\""
-  sql: ${Streams}/count(distinct ${avg_breakdown_by}) ;;
+  sql: {% if average_by._is_filtered %} ${Streams}/count(distinct${avg_breakdown_by}) {% else %} ${Streams} {% endif %} ;;
   html: {% if average_by._is_filtered %} {{rendered_value}} {% else %} Please add an averaging parameter {% endif %}  ;;
   label: "Average Streams"
   description: "Average number of Streams by selected averaging parameter"

@@ -33,24 +33,28 @@ view: metadata {
     value_format_name: id
     sql: ${TABLE}."NFEPISODEID" ;;
     label: "Episode ID"
+    description: "Info field - doesn't participate in calculations such as Date First Viewed"
   }
 
   dimension: nfepisodename {
     type: string
     sql: ${TABLE}."NFEPISODENAME" ;;
     label: "Episode Name"
+    required_fields: [nftitleid, nfseasonnumber]
   }
 
   dimension: nfepisodenumber {
     type: number
     sql: ${TABLE}."NFEPISODENUMBER" ;;
     label: "Episode Number"
+    required_fields: [nftitleid,nfseasonnumber]
   }
 
   dimension: nfseasonnumber {
     type: number
     sql: ${TABLE}."NFSEASONNUMBER" ;;
     label: "Season Number"
+    required_fields: [nftitleid]
   }
 
   dimension: nftitleid {
