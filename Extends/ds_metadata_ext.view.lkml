@@ -21,6 +21,8 @@ dimension: title_season {
 # }
 
 
+######--Below are the fields to be used only in dashboards, to avoid maintaining 2 different explores, switch them on to build dashboards, hide when in prod
+
 parameter: content_name_granularity {
   view_label: "METADATA"
   allowed_value: {

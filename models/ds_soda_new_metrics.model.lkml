@@ -17,7 +17,7 @@ explore:  ds_paneldata {
 sql_always_where: ${rid} in (select distinct rid from core.weights)
 and ${dateviewed_date}>= '{{ _user_attributes['soda_new_metrics_date_start'] }}'
 and ${dateviewed_date}< '{{ _user_attributes['soda_new_metrics_date_end'] }}'
-and ${metadata.nftitleid} is not null -- to exclude cases where the panellist watched smth within period, but they neither had a weight for that period, nor included in sample for reach
+and ${metadata.nftitleid} is not null
 ;;
 
 always_join: [metadata, ds_weights_streams_ext]
