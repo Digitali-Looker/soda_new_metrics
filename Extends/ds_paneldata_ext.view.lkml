@@ -110,8 +110,8 @@ parameter: average_by {
 ##-----This field is referenced in Avg_Reach calculations below to provide a unique identifier for each level of detail that sum_distinct will rely on
 ##-----in addition to main fields of rid, [profileid], sampledate
 dimension: avg_breakdown_by {
-sql: {% if average_by._parameter_value == "'episode'" %} concat_ws(', ',metadata.nftitleid, metadata.nfseasonnumber, metadata.nfepisodenumber)
-{% elsif average_by._parameter_value == "'season'" %} concat_ws(', ',metadata.nftitleid, metadata.nfseasonnumber)
+sql: {% if average_by._parameter_value == "'episode'" %} concat_ws(', ',metadata.nftitleid, ifnull(metadata.nfseasonnumber,1), ifnull(metadata.nfepisodenumber,1))
+{% elsif average_by._parameter_value == "'season'" %} concat_ws(', ',metadata.nftitleid, ifnull(metadata.nfseasonnumber,1))
 {% elsif average_by._parameter_value == "'title'" %} concat_ws(', ',metadata.nftitleid)
 {% elsif average_by._parameter_value == "'year'" %} concat_ws(', ',year(dateviewed))
 {% elsif average_by._parameter_value == "'year_quarter'" %} concat_ws(', ',date_trunc('quarter',dateviewed))
@@ -406,10 +406,10 @@ measure: average_minutes{
   view_label: "CALCULATIONS"
   group_label: "TIME VIEWED"
   label: "Average Minutes"
-  html: {% if average_by._is_filtered %} {{rendered_value}} {% else %} Please add an averaging parameter {% endif %}  ;;
   type: number
   value_format: "# ### ### ##0\" K mins\""
-  sql: ${total_minutes}/count(distinct ${avg_breakdown_by})  ;;
+  sql: {% if average_by._is_filtered %} ${total_minutes}/count(distinct ${avg_breakdown_by}) {% else %} ${total_minutes} {% endif %} ;;
+  html: {% if average_by._is_filtered %} {{rendered_value}} {% else %} Please add an averaging parameter {% endif %}  ;;
   description: "Average number of weighted minutes by selected averaging parameter (similar to average streams)"
 }
 
