@@ -419,6 +419,44 @@ measure: avg_000s {
 
 #----------------------------------------------
 
+
+######--------------POPULATION SIZE
+
+# measure: pop_size_account {
+#   type: sum_distinct
+#   value_format: "# ### ### ##0\" K\""
+#   # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
+#   sql_distinct_key:
+#   concat_ws(', ',${pop_size.rid},${pop_size.dateofactivity});;
+#   sql: ${pop_size.weight} ;;
+#   hidden: yes
+# }
+
+
+#   measure: pop_size_profile {
+#     value_format: "# ### ### ##0\" K\""
+#     type: sum_distinct
+#     # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
+#     sql_distinct_key:
+#       concat_ws(', ',${pop_size.rid},${pop_size.profileid},${pop_size.dateofactivity});;
+#     sql: ${pop_size.weight} ;;
+#     hidden: yes
+#   }
+
+
+#   measure: pop_size {
+#     view_label: "CALCULATIONS"
+#     label: "Population Size"
+#     value_format: "# ### ### ##0\" K\""
+#     type: number
+#     sql: {% if reach_account_granularity._parameter_value == "'profile'" %} ${pop_size_profile} {% else %} ${pop_size_account} {% endif %} ;;
+#   }
+
+measure: pop_size {
+  type: average
+  sql: ${pop_size.pop_size} ;;
+}
+
 ##
 #####################################################################################################################################################
 

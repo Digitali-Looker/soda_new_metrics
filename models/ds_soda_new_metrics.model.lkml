@@ -70,7 +70,19 @@ join: date_first_viewed {
   relationship: many_to_one
 }
 
+join: pop_size {
+  relationship: many_to_one
+  sql_on: ${pop_size.dateofactivity}=${ds_paneldata.sample_date_d_final} and ${pop_size.rid}=${ds_paneldata.rid};;
 }
+
+
+
+}
+
+
+
+
+
 
 
 ####### -- Notes for the prod version
