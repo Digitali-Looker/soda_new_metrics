@@ -7,7 +7,7 @@ view: ds_metadata_ext {
 
 dimension: title_season {
   type: string
-  sql: concat_ws(': ',${nftitlename},'Season '||${nfseasonnumber}) ;;
+  sql: {% if ${nfvideotype}==1 %} ${nftitlename} {% else %} concat_ws(': ',${nftitlename},'Season '||${nfseasonnumber}) {% endif %} ;;
   required_fields: [nftitleid, nfseasonnumber]
   view_label: "METADATA"
   label: "Title-Season"
@@ -41,10 +41,12 @@ parameter: content_name_granularity {
 
 dimension: dynamic_content_name {
   type: string
-  sql: {% if content_name_granularity._parameter_value == "'title'" %} {{nftitlename._name}}
+  sql: {% if ${nfvideotype}==1 %} {{nftitlename._name}} {% else %}
+  {% if content_name_granularity._parameter_value == "'title'" %} {{nftitlename._name}}
   {% elsif content_name_granularity._parameter_value == "'season'" %} concat_ws(': ',{{nftitlename._name}},'Season '||{{nfseasonnumber._name}})
   {% elsif content_name_granularity._parameter_value == "'episode'" %} concat_ws(': ',{{nftitlename._name}},'Season '||{{nfseasonnumber._name}},'Episode '||{{nfepisodenumber._name}})
-  {% else %} ${nftitlename} {% endif %};;
+  {% else %} ${nftitlename} {% endif %}
+  {% endif %};;
 }
 ####----This has to be done through the {{}} liquid, because if the actual field is referenced, Looker drags its required fields in all scenarios,
 ## not just when condition is true (which is very annoying as if it only pulled required fields relevant for the active option, this would be an ideal scenario
