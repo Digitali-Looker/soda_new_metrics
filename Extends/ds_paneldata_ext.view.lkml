@@ -446,7 +446,8 @@ measure: pop_size {
   view_label: "CALCULATIONS"
   label: "Population Size"
   value_format: "# ### ### ##0\" K\""
-  type: average
+  type: sum_distinct
+  sql_distinct_key: ${demoinfo.demoid} ;;
   sql: ${pop_size.pop_size} ;;
 }
 

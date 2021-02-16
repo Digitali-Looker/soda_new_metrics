@@ -29,16 +29,12 @@ view: pop_size {
       w.WEIGHT,
       d.demoid,
       sum(weight) over (partition by dateofactivity,
-      {% if demoinfo.demoid._is_selected %} demoid {% else %} 1 {% endif %}
-      -----this is about the breakdown - if any other fields are added to demoinfo they will beed to slot here and in where clause below as well as
-      -----in the list of fields outside the CTE, dimensions and join parameters
+      demoid
       ) POP_SIZE
     FROM core.WEIGHTS w
     {% if ds_paneldata.reach_account_granularity._parameter_value == "'profile'" %} LEFT JOIN (SELECT DISTINCT rid, profileid FROM core.PANELDATA) p ON w.RID = p.RID {% else %} {% endif %}
     ------Profile join will be added to multiply weights by number of profiles if the profile granularity is selected
     left join core.demoinfo d on W.rid = d.rid
-    where  {% if demoinfo.demoid._is_filtered %} {% condition demoinfo.demoid %} demoid  {% endcondition %} {% else %} 1=1 {% endif %}
-    -----condition on demoid will be passed here so that total population is calc correctly without a demo breakdown
     )
     SELECT distinct
     dateofactivity,
