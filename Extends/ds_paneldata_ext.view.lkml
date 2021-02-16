@@ -443,6 +443,9 @@ measure: avg_000s {
 
 
 measure: pop_size {
+  view_label: "CALCULATIONS"
+  label: "Population Size"
+  value_format: "# ### ### ##0\" K\""
   type: average
   sql: ${pop_size.pop_size} ;;
 }
