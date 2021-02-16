@@ -37,6 +37,15 @@ view: ds_paneldata_ext {
     {% endcondition %};;
  }
 
+
+
+####------Sample date overwrite
+parameter: sample_date_overwrite {
+  view_label: "CALCULATIONS"
+  type: date
+}
+
+
 ###----This is the parameter for 2 ways of calculating Reach,
 ##-----Reach is written in the way that by default it calcs on an account level, but adding this switch allows to chage to profile and back
 parameter: reach_account_granularity {
@@ -161,6 +170,16 @@ hidden: yes
 
 
 
+######----This service dimension checks if any user defined value has been passed into the sample_date_overwrite parameter and if so
+##---replaces pre-calculated value with a user-defined
+dimension: sample_date_o {
+  hidden: yes
+  sql: {% if sample_date_overwrite._is_filtered %} to_date({% parameter sample_date_overwrite %}) {% else %} ${sample_date_d} {% endif %}  ;;
+}
+
+
+
+
 ##------on the previous step you must have wondered "what about today for instance" 11/02/21 would take us to 31/12/21 for end of year which is in the future
 ##----so we need to adjust the sample date to always sit within the extremes of either available data (user attributes) or a selection driven by the data filter
 ##----below looks at whether filter is applied (in which case boundaries are set by filter
@@ -176,13 +195,13 @@ hidden: yes
     type: date
     label: "Sample Date Dimension"
     sql:{% if date_viewed._is_filtered %}
-    case when {% condition date_viewed %} ${sample_date_d} {% endcondition %} then ${sample_date_d}
-    when ${sample_date_d}<{% date_start date_viewed %} then {% date_start date_viewed %}
-    when ${sample_date_d}>={% date_end date_viewed %} then dateadd(day,-1,{% date_end date_viewed %}) end
+    case when {% condition date_viewed %} ${sample_date_o} {% endcondition %} then ${sample_date_o}
+    when ${sample_date_o}<{% date_start date_viewed %} then {% date_start date_viewed %}
+    when ${sample_date_o}>={% date_end date_viewed %} then dateadd(day,-1,{% date_end date_viewed %}) end
     {% else %}
-    case when ${sample_date_d}< '{{ _user_attributes['soda_new_metrics_date_start'] }}' then '{{ _user_attributes['soda_new_metrics_date_start'] }}'
-    when ${sample_date_d}>='{{ _user_attributes['soda_new_metrics_date_end'] }}' then dateadd(day,-1,'{{ _user_attributes['soda_new_metrics_date_end'] }}')
-    else ${sample_date_d} end
+    case when ${sample_date_o}< '{{ _user_attributes['soda_new_metrics_date_start'] }}' then '{{ _user_attributes['soda_new_metrics_date_start'] }}'
+    when ${sample_date_o}>='{{ _user_attributes['soda_new_metrics_date_end'] }}' then dateadd(day,-1,'{{ _user_attributes['soda_new_metrics_date_end'] }}')
+    else ${sample_date_o} end
     {% endif %}
     ;;
   }

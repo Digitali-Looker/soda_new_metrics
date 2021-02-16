@@ -1,5 +1,22 @@
 include: "/[!model]*/*"
 
+
+######## Tried making pop size through NDT and a separate explore - again it wouldn't work cause we need to configure the partitioning by depending on what
+## demoinfo fields are selected, and referencing them from a different explore doesn't seem to work
+
+##---Another way I've tried is sum_distinct, but with that join on rid becomes a filtering entity - if we sum weights by distinct rids, profiles and whatever
+##---demoinfo fields are passed into the query, any rids that get filtered out from paneldata as not having had viewing would reduce the sum, so basically this will be reach
+
+##Hence we want sums to be pre-calulated in a derived table.
+
+##It's easier than in a former model because date breakdown is covered by sample date selection and a consequent join on dateofactivity = sample date.
+## So the only conditional filtering and partitioning needs to be coded for fields relating to demographic information
+
+##At the moment it's only one field - demoid
+
+## Adding/Removing Profileid from the CTE affects the level at which the population is calculated - profile vs account. As all profiles within a rid
+## have the same demoid and the same weight, it doesn't need to come through any further than CTE - doen't need to be a dimension to participate in a join
+
 view: pop_size {
   derived_table: {
     sql:
