@@ -23,19 +23,27 @@ view: pop_size {
     WITH ONE AS (    SELECT DISTINCT
       w.RID,
       {% if ds_paneldata.reach_account_granularity._parameter_value == "'profile'" %} p.PROFILEID, {% else %} {% endif %}
+      ------Profile will be added to multiply weights by number of profiles if the profile granularity is selected
       w.DATEOFACTIVITY,
       w.LOADID,
       w.WEIGHT,
-      d.demoid
+      d.demoid,
+      sum(weight) over (partition by dateofactivity,
+      {% if demoinfo.demoid._is_selected %} demoid {% else %} 1 {% endif %}
+      -----this is about the breakdown - if any other fields are added to demoinfo they will beed to slot here and in where clause below as well as
+      -----in the list of fields outside the CTE, dimensions and join parameters
+      ) POP_SIZE
     FROM core.WEIGHTS w
-    LEFT JOIN (SELECT DISTINCT rid, profileid FROM core.PANELDATA) p ON w.RID = p.RID
+    {% if ds_paneldata.reach_account_granularity._parameter_value == "'profile'" %} LEFT JOIN (SELECT DISTINCT rid, profileid FROM core.PANELDATA) p ON w.RID = p.RID {% else %} {% endif %}
+    ------Profile join will be added to multiply weights by number of profiles if the profile granularity is selected
     left join core.demoinfo d on W.rid = d.rid
     where  {% if demoinfo.demoid._is_filtered %} {% condition demoinfo.demoid %} demoid  {% endcondition %} {% else %} 1=1 {% endif %}
+    -----condition on demoid will be passed here so that total population is calc correctly without a demo breakdown
     )
-    SELECT *
-    , sum(weight) over (partition by dateofactivity,
-      {% if demoinfo.demoid._is_selected %} demoid {% else %} 1 {% endif %}
-      ) POP_SIZE
+    SELECT distinct
+    dateofactivity,
+    demoid,
+    POP_SIZE
     FROM ONE
     ;;
     ######## Whenever a new demoinfo field is added to that table (be it an account holder info or whatever),
@@ -59,9 +67,9 @@ view: pop_size {
     #   hidden: yes
     # }
 
-    # dimension: demoid {
-    #   hidden: no
-    # }
+    dimension: demoid {
+      hidden: yes
+    }
 
     # dimension: weight {
     #   type: number
