@@ -21,6 +21,9 @@ and ${metadata.nftitleid} is not null
 ;;
 
 always_join: [metadata]
+###### always join shouldn't include any weights table as dynamic targeting table relies on untouched set of viewing rows
+## if any joins require other joins to happen use required joins param
+
 
 join: metadata {
   from: ds_metadata_ext
