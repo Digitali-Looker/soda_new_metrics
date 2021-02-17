@@ -35,6 +35,13 @@ view: pop_size {
     {% if ds_paneldata.reach_account_granularity._parameter_value == "'profile'" %} LEFT JOIN (SELECT DISTINCT rid, profileid FROM core.PANELDATA) p ON w.RID = p.RID {% else %} {% endif %}
     ------Profile join will be added to multiply weights by number of profiles if the profile granularity is selected
     left join core.demoinfo d on W.rid = d.rid
+    --------------------------------------------------------------------------------------------
+    ------ This joins dynamic targeting table if any field from it is filtered (only filter fields from this table are available for users)
+    ------ Can become a persistent join, but conditional will potentially reduce the load on the system
+    {% if dynamic_targeting.*._in_query %}
+    {% if ds_paneldata.reach_account_granularity._parameter_value == "'profile'" %} inner join ${dynamic_targeting.SQL_TABLE_NAME} as dynamic_targeting on w.rid = dynamic_targeting.rid and p.PROFILEID = dyamic_targeting.profileid
+    {% else %} inner join (select distinct rid from ${dynamic_targeting.SQL_TABLE_NAME}) as dynamic_targeting on w.rid = dynamic_targeting.rid {% endif %}
+    {% else %} {% endif %}
     )
     SELECT distinct
     dateofactivity,

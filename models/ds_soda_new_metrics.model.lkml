@@ -75,6 +75,11 @@ join: pop_size {
   sql_on: ${pop_size.dateofactivity}=${ds_paneldata.sample_date_d_final} and ${pop_size.demoid}=${demoinfo.demoid};;
 }
 
+join: dynamic_targeting {
+  relationship: many_to_one
+  sql_on: ${ds_paneldata.rid}=${dynamic_targeting.rid} and ${ds_paneldata.profileid}=${dynamic_targeting.profileid} ;;
+  type: inner
+}
 
 
 }

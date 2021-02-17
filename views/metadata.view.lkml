@@ -73,9 +73,16 @@ view: metadata {
   }
 
   dimension: nfvideotype {
-    type: number
-    sql: ${TABLE}."NFVIDEOTYPE" ;;
+    # type: number
+    # sql: ${TABLE}."NFVIDEOTYPE" ;;
     label: "Video Type"
+    case: {
+      when: {
+      sql: ${TABLE}.nfvideotype = 1;;
+      label: "Movie"
+      }
+      else: "Series"
+          }
   }
 
   dimension: platformid {
