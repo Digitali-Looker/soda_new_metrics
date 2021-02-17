@@ -163,7 +163,7 @@ hidden: yes
       {% elsif dateviewed_time._is_selected %}
       ${dateviewed_date}
       {% else %}
-      {% if date_viewed._is_filtered %} {% date_end date_viewed %} {% else %} '{{ _user_attributes['soda_new_metrics_date_end'] }}' {% endif %}
+      {% if date_viewed._is_filtered %} dateadd(day,-1,{% date_end date_viewed %}) {% else %} dateadd(day,-1,'{{ _user_attributes['soda_new_metrics_date_end'] }}') {% endif %}
       {% endif %};;
     hidden: yes
   }
@@ -173,7 +173,7 @@ hidden: yes
 ######----This service dimension checks if any user defined value has been passed into the sample_date_overwrite parameter and if so
 ##---replaces pre-calculated value with a user-defined
 dimension: sample_date_o {
-  hidden: yes
+  # hidden: yes
   sql: {% if sample_date_overwrite._is_filtered %} to_date({% parameter sample_date_overwrite %}) {% else %} ${sample_date_d} {% endif %}  ;;
 }
 
