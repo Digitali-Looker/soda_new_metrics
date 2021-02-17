@@ -173,7 +173,7 @@ hidden: yes
 ######----This service dimension checks if any user defined value has been passed into the sample_date_overwrite parameter and if so
 ##---replaces pre-calculated value with a user-defined
 dimension: sample_date_o {
-  # hidden: yes
+  hidden: yes
   sql: {% if sample_date_overwrite._is_filtered %} to_date({% parameter sample_date_overwrite %}) {% else %} ${sample_date_d} {% endif %}  ;;
 }
 
