@@ -20,7 +20,7 @@ and ${dateviewed_date}< '{{ _user_attributes['soda_new_metrics_date_end'] }}'
 and ${metadata.nftitleid} is not null
 ;;
 
-always_join: [metadata, ds_weights_streams_ext]
+always_join: [metadata]
 
 join: metadata {
   from: ds_metadata_ext
