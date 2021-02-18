@@ -14,7 +14,7 @@ view: date_first_viewed {
         m.NFEPISODEID,
         m.NFSEASONNUMBER,
         m.NFEPISODENUMBER,
-        p.COUNTRYVIEWED ,
+        {% if ds_paneldata.countryviewed._is_selected %} p.COUNTRYVIEWED, {% else %}  {% endif %}
         min(to_date(p.DATEVIEWED)) OVER (PARTITION BY
         m.NFTITLEID,
         {% if metadata.nfseasonnumber._is_selected or metadata.content_name_granularity._parameter_value == "'season'" %} m.NFSEASONNUMBER {% else %} 1 {% endif %},
