@@ -410,7 +410,7 @@ measure: average_minutes{
   value_format: "# ### ### ##0\" K mins\""
   sql: {% if average_by._is_filtered %} ${total_minutes}/count(distinct ${avg_breakdown_by}) {% else %} ${total_minutes} {% endif %} ;;
   html: {% if average_by._is_filtered %} {{rendered_value}} {% else %} Please add an averaging parameter {% endif %}  ;;
-  description: "Average number of weighted minutes by selected averaging parameter (similar to average streams)"
+  description: "Total weighted minutes averaged by selected averaging parameter (similar to average streams)"
 }
 
 # measure: average_minutes_per_hh {
