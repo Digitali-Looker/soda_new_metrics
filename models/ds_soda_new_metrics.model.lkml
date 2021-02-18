@@ -17,8 +17,9 @@ explore:  ds_paneldata {
 sql_always_where: ${rid} in (select distinct rid from core.weights)
 and ${dateviewed_date}>= '{{ _user_attributes['soda_new_metrics_date_start'] }}'
 and ${dateviewed_date}< '{{ _user_attributes['soda_new_metrics_date_end'] }}'
-and ${metadata.nftitleid} is not null
 ;;
+# and ${metadata.nftitleid} is not null
+
 
 # always_join: [metadata]
 ###### always join shouldn't include any weights table as dynamic targeting table relies on untouched set of viewing rows

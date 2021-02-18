@@ -431,6 +431,7 @@ measure: avg_000s {
   This field doesn't require an averaging parameter."
   sql: sum((${bookmark_mins}*${ds_weights_streams_ext.weight}))/(${content_average_duration}*${episodes_num}) ;;
   value_format: "# ### ### ##0\" K\""
+  html: {% if metadata.*._in_query %} {{rendered_value}} {% else %} Please add a content related field or use a different measure {% endif %} ;;
 }
 
 
@@ -443,6 +444,7 @@ measure: avg_000s_time {
   This calculation is detached from content durations and is based on an absolute number of minutes within the selected time-frame."
   sql: sum((${bookmark_mins}*${ds_weights_streams_ext.weight}))/${duration_no_content} ;;
   value_format: "# ### ### ##0\" K\""
+  html: {% if metadata.*._in_query %} Please remove a content related field or use a different measure {% else %} {{rendered_value}} {% endif %} ;;
 }
 
 
