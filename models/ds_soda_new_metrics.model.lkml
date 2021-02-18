@@ -20,7 +20,7 @@ and ${dateviewed_date}< '{{ _user_attributes['soda_new_metrics_date_end'] }}'
 and ${metadata.nftitleid} is not null
 ;;
 
-always_join: [metadata]
+# always_join: [metadata]
 ###### always join shouldn't include any weights table as dynamic targeting table relies on untouched set of viewing rows
 ## if any joins require other joins to happen use required joins param
 
@@ -52,12 +52,12 @@ join: ds_weights_streams_ext {
 
   join: weights_reach {
   relationship: many_to_one
-  sql_on:
-  concat_ws(', ',${ds_paneldata.rid},${ds_paneldata.profileid},${ds_paneldata.sample_date_d_final})=
-  concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${weights_reach.dateofactivity}) ;;
+  sql_on: ${ds_paneldata.rid}=${weights_reach.rid} and ${ds_paneldata.profileid}=${weights_reach.profileid} and ${ds_paneldata.sample_date_d_final}=${weights_reach.dateofactivity} ;;
   sql_where: (${weights_reach.weight}>0 or ${ds_weights_streams_ext.weight}>0) ;;
   ### -- This sql where excludes cases where viewing registered was from a person that's both outside current sample for reach
   ##  and didn't have weight at the date of viewing (joined panel later than that date)
+  ######  former join: concat_ws(', ',${ds_paneldata.rid},${ds_paneldata.profileid},${ds_paneldata.sample_date_d_final})=
+  ######  concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${weights_reach.dateofactivity})
 }
 
 ###########

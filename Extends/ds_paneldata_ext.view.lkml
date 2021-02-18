@@ -160,8 +160,6 @@ hidden: yes
       dateadd(day,-1,dateadd(week,1,(date_trunc(week,${dateviewed_raw}))))
       {% elsif dateviewed_date._is_selected %}
       ${dateviewed_date}
-      {% elsif dateviewed_time._is_selected %}
-      ${dateviewed_date}
       {% else %}
       {% if date_viewed._is_filtered %} dateadd(day,-1,{% date_end date_viewed %}) {% else %} dateadd(day,-1,'{{ _user_attributes['soda_new_metrics_date_end'] }}') {% endif %}
       {% endif %};;
@@ -372,7 +370,7 @@ measure: Avg_Streams {
 
 measure: episodes_num {
   view_label: "CALCULATIONS"
-sql: count(distinct concat_ws(', ',metadata.nftitleid, metadata.nfseasonnumber, metadata.nfepisodenumber)) ;;
+sql: count(distinct concat_ws(', ',metadata.nftitleid, ifnull(metadata.nfseasonnumber,1), ifnull(metadata.nfepisodenumber,1))) ;;
 label: "Number of Episodes viewed"
 value_format: "0"
 type: number
@@ -426,14 +424,48 @@ measure: average_minutes{
 measure: avg_000s {
   view_label: "CALCULATIONS"
   group_label: "TIME VIEWED"
-  label: "Average Minute Audience Size"
+  type: number
+  label: "Average Minute Audience Size for content-based calculations"
   description: "This measure is similar to TV's average 000s and represents the audience size on an average minute of the content.
   As this measure is tied to available content durations captured by the viewing file, it is most relevant to content-based analysis.
   This field doesn't require an averaging parameter."
-  type: sum
-  sql: (${bookmark_mins}*${ds_weights_streams_ext.weight})/${duration_mins} ;;
+  sql: sum((${bookmark_mins}*${ds_weights_streams_ext.weight}))/(${content_average_duration}*${episodes_num}) ;;
   value_format: "# ### ### ##0\" K\""
 }
+
+
+measure: avg_000s_time {
+  view_label: "CALCULATIONS"
+  group_label: "TIME VIEWED"
+  type: number
+  label: "Average Minute Audience Size for time-based calculations"
+  description: "This measure is similar to TV's average 000s and represents the audience size on an average minute.
+  This calculation is detached from content durations and is based on an absolute number of minutes within the selected time-frame."
+  sql: sum((${bookmark_mins}*${ds_weights_streams_ext.weight}))/${duration_no_content} ;;
+  value_format: "# ### ### ##0\" K\""
+}
+
+
+measure: duration_no_content {
+  view_label: "CALCULATIONS"
+  group_label: "TIME VIEWED"
+  label: "TEST duration when no content selected"
+  sql: datediff(minute,date_trunc('minute',min(${dateviewed_raw})),date_trunc('minute',max(${dateviewed_raw})))+1;;
+  type: number
+  ######This needs rethinking for things like quarter of the year - perhaps join a calendar or smth
+  hidden: yes
+}
+
+measure: content_average_duration{
+  view_label: "CALCULATIONS"
+  group_label: "TIME VIEWED"
+  type: average
+  sql: ${duration_mins} ;;
+  hidden: yes
+}
+
+
+
 
 
 #----------------------------------------------
