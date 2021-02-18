@@ -385,11 +385,11 @@ html: {% if metadata.nftitlename._is_selected or metadata.nftitleid._is_selected
 measure: avg_viewing_rate {
   view_label: "CALCULATIONS"
   group_label: "TIME VIEWED"
-  label: "Average Viewing Rate %"
+  label: "Average Episode Viewing Rate %"
   type: average
   value_format: "0.00%"
   sql: ${bookmark_mins}/${duration_mins};;
-  description: "What % of available duration is completed within a viewing session on average"
+  description: "What % of available duration (of an episode or a movie) is completed within a viewing session on average"
 }
 
 measure: total_minutes {
