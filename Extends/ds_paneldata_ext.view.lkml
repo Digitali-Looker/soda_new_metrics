@@ -313,7 +313,7 @@ measure: Reach {
     # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
     # sql_distinct_key:  concat_ws(', ',${weights_reach.rid},${dateviewed_raw},COALESCE(${episodeid},${netflixid}));;
     sql:  concat_ws(', ',${weights_reach.rid},${dateviewed_raw},COALESCE(${episodeid},${netflixid}));;
-    # hidden: yes
+    hidden: yes
   }
 
 
@@ -327,7 +327,7 @@ measure: Reach {
     # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
     sql:concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${dateviewed_raw},COALESCE(${episodeid},${netflixid}));;
     # sql: ${weights_reach.frequencycounter} ;;
-    # hidden: yes
+    hidden: yes
   }
 
 
