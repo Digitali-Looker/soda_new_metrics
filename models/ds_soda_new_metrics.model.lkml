@@ -53,7 +53,9 @@ join: ds_weights_streams_ext {
 
   join: weights_reach {
   relationship: many_to_one
-  sql_on: ${ds_paneldata.rid}=${weights_reach.rid} and ${ds_paneldata.profileid}=${weights_reach.profileid} and ${ds_paneldata.sample_date_d_final}=${weights_reach.dateofactivity} ;;
+  sql_on: ${ds_paneldata.rid}=${weights_reach.rid} and ${ds_paneldata.profileid}=${weights_reach.profileid}
+  and ${ds_paneldata.sample_date_d_final}=${weights_reach.dateofactivity}
+  and ${ds_paneldata.bookmark_mins}>= {% parameter ds_paneldata.minutes_threshold %};;
   sql_where: (${weights_reach.weight}>0 or ${ds_weights_streams_ext.weight}>0) ;;
   ### -- This sql where excludes cases where viewing registered was from a person that's both outside current sample for reach
   ##  and didn't have weight at the date of viewing (joined panel later than that date)

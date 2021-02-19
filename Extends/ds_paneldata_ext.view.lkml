@@ -38,6 +38,15 @@ view: ds_paneldata_ext {
  }
 
 
+#####------Reach threshold
+parameter: minutes_threshold{
+  view_label: "CALCULATIONS"
+  label: "Minutes threshold for Reach"
+  description: "Minumum number of minutes in a session to qualify for Reach calculations (viewed at least this number of mins)"
+  type: number
+  default_value: "0"
+}
+
 
 ####------Sample date overwrite
 parameter: sample_date_overwrite {
@@ -396,7 +405,7 @@ measure: avg_viewing_rate {
   label: "Average Episode Viewing Rate %"
   type: average
   value_format: "0.00%"
-  sql: ${bookmark_mins}/${duration_mins};;
+  sql: case when ${ds_weights_streams_ext.weight}>0 then (${bookmark_mins}/${duration_mins}) else null end;;
   description: "What % of available duration (of an episode or a movie) is completed within a viewing session on average"
 }
 
