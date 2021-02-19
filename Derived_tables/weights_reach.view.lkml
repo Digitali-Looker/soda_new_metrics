@@ -7,7 +7,8 @@ view: weights_reach {
       p.PROFILEID,
       w.DATEOFACTIVITY,
       w.LOADID,
-      w.WEIGHT
+      w.WEIGHT,
+      1 as FREQUENCYCOUNTER
     FROM core.WEIGHTS w
     LEFT JOIN (SELECT DISTINCT rid, profileid FROM core.PANELDATA) p
     ON w.RID = p.RID
@@ -34,9 +35,10 @@ view: weights_reach {
     hidden: yes
   }
 
-  # dimension: demoid {
-  #   hidden: no
-  # }
+  dimension: frequencycounter {
+    type: number
+    hidden: yes
+  }
 
   dimension: weight {
     type: number

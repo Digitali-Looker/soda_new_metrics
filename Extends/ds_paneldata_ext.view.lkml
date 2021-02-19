@@ -273,6 +273,8 @@ measure: Reach_Account {
   hidden: yes
 }
 
+
+
 ####----Same logic as above, except we add one more partitioning field - Profileid. So for each profile within the HH the weight will be counted once more
   measure: Reach_Profile {
     value_format: "# ### ### ##0\" K\""
@@ -285,6 +287,8 @@ measure: Reach_Account {
   }
 
 
+
+
 ##--If the parameter is set to profile reach will refer to Reach_Profile, in all other cases (including when parameter is not selected at all it will go to account lvl)
 measure: Reach {
   view_label: "CALCULATIONS"
@@ -294,6 +298,55 @@ measure: Reach {
   sql: {% if reach_account_granularity._parameter_value == "'profile'" %} ${Reach_Profile} {% else %} ${Reach_Account} {% endif %} ;;
   # html: {{value}} {{reach_account_granularity._parameter_value}} ;; ##This is just to check if liquid picks up the param value, for some reason it needed both sets of quotes around the value, which is weird
 }
+
+
+
+
+
+#############-----FREQUENCY
+
+  measure: frequency_base_Account {
+    # value_format: "# ### ### ##0\" K\""
+    type: count_distinct
+    view_label: "CALCULATIONS"
+    group_label: "FREQUENCY"
+    # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
+    # sql_distinct_key:  concat_ws(', ',${weights_reach.rid},${dateviewed_raw},COALESCE(${episodeid},${netflixid}));;
+    sql:  concat_ws(', ',${weights_reach.rid},${dateviewed_raw},COALESCE(${episodeid},${netflixid}));;
+    # hidden: yes
+  }
+
+
+
+####----Same logic as above, except we add one more partitioning field - Profileid. So for each profile within the HH the weight will be counted once more
+  measure: frequency_base_Profile {
+    # value_format: "# ### ### ##0\" K\""
+    type: count_distinct
+    view_label: "CALCULATIONS"
+    group_label: "FREQUENCY"
+    # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
+    sql:concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${dateviewed_raw},COALESCE(${episodeid},${netflixid}));;
+    # sql: ${weights_reach.frequencycounter} ;;
+    # hidden: yes
+  }
+
+
+
+
+##--If the parameter is set to profile reach will refer to Reach_Profile, in all other cases (including when parameter is not selected at all it will go to account lvl)
+  measure: avg_frequency {
+    view_label: "CALCULATIONS"
+    group_label: "FREQUENCY"
+    value_format: "0"
+    type: number
+    sql: {% if reach_account_granularity._parameter_value == "'profile'" %} ${frequency_base_Profile} {% else %} ${frequency_base_Account} {% endif %}/${sample_size} ;;
+    # html: {{value}} {{reach_account_granularity._parameter_value}} ;; ##This is just to check if liquid picks up the param value, for some reason it needed both sets of quotes around the value, which is weird
+  }
+
+
+
+
+
 
 #------------------------------
 
@@ -305,7 +358,7 @@ measure: Reach {
     type: number
     label: "Sample size (Reach)"
     description: "Number of Households involved in Reach calculation"
-    sql: count(distinct ${weights_reach.rid}) ;;
+    sql: {% if reach_account_granularity._parameter_value == "'profile'" %} count(distinct ${weights_reach.profileid}) {% else %} count(distinct ${weights_reach.rid}) {% endif %} ;;
     html: {% if {{value}} < 5 %} {{rendered_value}} Low Sample! {% else %} {{rendered_value}} {% endif %};;
 }
 
