@@ -429,7 +429,8 @@ measure: avg_000s {
   description: "This measure is similar to TV's average 000s and represents the audience size on an average minute of the content.
   As this measure is tied to available content durations captured by the viewing file, it is most relevant to content-based analysis.
   This field doesn't require an averaging parameter."
-  sql: sum((${bookmark_mins}*${ds_weights_streams_ext.weight}))/(${content_average_duration}*${episodes_num}) ;;
+  sql: {% if metadata.*._in_query %} sum((${bookmark_mins}*${ds_weights_streams_ext.weight}))/(${content_average_duration}*${episodes_num})
+  {% else %} 1 {% endif %};;
   value_format: "# ### ### ##0\" K\""
   html: {% if metadata.*._in_query %} {{rendered_value}} {% else %} Please add a content related field or use a different measure {% endif %} ;;
 }
