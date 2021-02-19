@@ -20,17 +20,26 @@ view: paneldata {
     type: time
     timeframes: [
       raw,
-      hour_of_day,
       date,
       week,
       month,
       quarter,
-      quarter_of_year,
       year
     ]
     sql: ${TABLE}."DATEVIEWED" ;;
     # allow_fill: no
     label: "Date Of Acivity"
+  }
+
+  dimension_group: daypart_viewed {
+    type: time
+    timeframes: [
+      hour_of_day,
+      quarter_of_year,
+      day_of_week
+    ]
+    sql: ${TABLE}."DATEVIEWED" ;;
+    label: "Dayparts"
   }
 
   dimension: devicetype {

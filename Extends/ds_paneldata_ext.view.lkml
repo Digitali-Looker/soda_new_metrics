@@ -103,6 +103,14 @@ parameter: average_by {
     label: "Day"
     value: "day"
   }
+  allowed_value: {
+    label: "Hour of Day"
+    value: "hour"
+  }
+  allowed_value: {
+    label: "Day of Week"
+    value: "day_of_week"
+  }
 }
 
 ###------Very important - this needs to be consistent with the list of allowed values in the parameter above
@@ -119,6 +127,8 @@ sql: {% if average_by._parameter_value == "'episode'" %} concat_ws(', ',metadata
 {% elsif average_by._parameter_value == "'month'" %} concat_ws(', ',month(dateviewed))
 {% elsif average_by._parameter_value == "'week'" %} concat_ws(', ',date_trunc('week',dateviewed))
 {% elsif average_by._parameter_value == "'day'" %} concat_ws(', ',to_date(dateviewed))
+{% elsif average_by._parameter_value == "'hour'" %} concat_ws(', ',hour(dateviewed))
+{% elsif average_by._parameter_value == "'day_of_week'" %} concat_ws(', ',date_part('weekday',dateviewed))
 {% else %}  {% endif %}
 ;;
 hidden: yes
@@ -152,7 +162,7 @@ hidden: yes
     type: date
     sql: {% if dateviewed_year._is_selected %}
       dateadd(day,-1,dateadd(year,1,(date_trunc(year,${dateviewed_raw}))))
-      {% elsif dateviewed_quarter._is_selected or dateviewed_quarter_of_year._is_selected %}
+      {% elsif dateviewed_quarter._is_selected %}
       dateadd(day,-1,dateadd(quarter,1,(date_trunc(quarter,${dateviewed_raw}))))
       {% elsif dateviewed_month._is_selected %}
       dateadd(day,-1,dateadd(month,1,(date_trunc(month,${dateviewed_raw}))))
