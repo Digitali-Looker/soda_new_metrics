@@ -303,7 +303,7 @@ measure: Reach {
 
 
 
-#############-----FREQUENCY
+#############-----AVERAGE FREQUENCY
 
   measure: frequency_base_Account {
     # value_format: "# ### ### ##0\" K\""
@@ -344,6 +344,7 @@ measure: Reach {
   }
 
 
+########--------FREQUENCY
 
 # dimension: frequency_every_line_test_account{
 #   view_label: "CALCULATIONS"
