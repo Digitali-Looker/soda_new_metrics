@@ -410,25 +410,27 @@ measure: total_minutes {
   description: "Total number of weighted minutes"
 }
 
-measure: average_minutes{
+measure: average_minutes_viewers{
   view_label: "CALCULATIONS"
   group_label: "TIME VIEWED"
-  label: "Average Minutes"
+  label: "Average Minutes 000s (Viewers)"
   type: number
-  value_format: "# ### ### ##0\" K mins\""
-  sql: {% if average_by._is_filtered %} ${total_minutes}/count(distinct ${avg_breakdown_by}) {% else %} ${total_minutes} {% endif %} ;;
-  html: {% if average_by._is_filtered %} {{rendered_value}} {% else %} Please add an averaging parameter {% endif %}  ;;
-  description: "Total weighted minutes averaged by selected averaging parameter (similar to average streams)"
+  value_format: "0"
+  sql: ${total_minutes}/${Reach};;
+  # html: {% if average_by._is_filtered %} {{rendered_value}} {% else %} Please add an averaging parameter {% endif %}  ;;
+  description: "Average number of minutes a person that watched content watched"
 }
 
-# measure: average_minutes_per_hh {
-#   label: "Average Minutes per Account"
-#   html: {% if average_by._is_filtered %} {{rendered_value}} {% else %} Please add an averaging parameter {% endif %}  ;;
-#   type: number
-#   value_format: "# ### ### ##0\" K mins\""
-#   sql: ${average_minutes}/count(distinct ds_weights_streams_ext.rid) ;;
-# }
-####----Not sure about this one, think its only going to confuse things
+  measure: average_minutes_all{
+    view_label: "CALCULATIONS"
+    group_label: "TIME VIEWED"
+    label: "Average Minutes 000s (All)"
+    type: number
+    value_format: "0"
+    sql: ${total_minutes}/${pop_size};;
+    # html: {% if average_by._is_filtered %} {{rendered_value}} {% else %} Please add an averaging parameter {% endif %}  ;;
+    description: "Average number of minutes a person in general watched"
+  }
 
 
 measure: avg_000s {
