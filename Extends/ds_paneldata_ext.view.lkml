@@ -339,9 +339,21 @@ measure: Reach {
     group_label: "FREQUENCY"
     value_format: "0"
     type: number
-    sql: {% if reach_account_granularity._parameter_value == "'profile'" %} ${frequency_base_Profile} {% else %} ${frequency_base_Account} {% endif %}/${sample_size} ;;
+    sql: {% if reach_account_granularity._parameter_value == "'profile'" %} ${frequency_base_Profile} {% else %} ${frequency_base_Account} {% endif %}/(case when ${sample_size}=0 then 1 else ${sample_size} end) ;;
     # html: {{value}} {{reach_account_granularity._parameter_value}} ;; ##This is just to check if liquid picks up the param value, for some reason it needed both sets of quotes around the value, which is weird
   }
+
+
+
+# dimension: frequency_every_line_test_account{
+#   view_label: "CALCULATIONS"
+#   group_label: "FREQUENCY"
+#   sql: (select count( distinct concat_ws(', ',p.rid,p.dateviewed,COALESCE(p.episodeid,p.netflixid)))
+#         from core.paneldata p
+#         where p.rid = ${weights_reach.rid} and COALESCE(p.episodeid,p.netflixid)=COALESCE(${episodeid},${netflixid}))
+#   ;;
+# }
+
 
 
 
