@@ -19,21 +19,44 @@ view: paneldata_ext {
 
 
 
-# dimension: selected_list {
-#   type: string
-#   sql: concat_ws(', ',{% if paneldata.rid._is_selected %} {{paneldata.rid._name}} {% else %} '1' {% endif %});;
-#   # hidden: yes
-# }
+dimension: selected_list {
+  type: string
+  sql: concat_ws(', ',
+  ---------paneldata fields --------------
+  {% if paneldata.rid._is_selected %} {{paneldata.rid._name}}, {% else %} {% endif %}
+  {% if paneldata.profileid._is_selected %} {{paneldata.profileid._name}}, {% else %} {% endif %}
+  {% if paneldata.bookmark_mins._is_selected %} {{paneldata.bookmark_mins._name}}, {% else %} {% endif %}
+  {% if paneldata.countryviewed._is_selected %} {{paneldata.countryviewed._name}}, {% else %} {% endif %}
+  {% if paneldata.devicetype._is_selected %} {{paneldata.devicetype._name}}, {% else %} {% endif %}
+  {% if paneldata.duration_mins._is_selected %} {{paneldata.duration_mins._name}}, {% else %} {% endif %}
+  {% if paneldata.dateviewed_raw._is_selected %} {{paneldata.dateviewed_raw._name}}, {% else %} {% endif %}
+  {% if paneldata.dateviewed_date._is_selected %} to_date(paneldata.dateviewed), {% else %} {% endif %}
+  {% if paneldata.dateviewed_week._is_selected %} date_trunc('week',paneldata.dateviewed), {% else %} {% endif %}
+  {% if paneldata.dateviewed_month._is_selected %} date_trunc('month',paneldata.dateviewed), {% else %} {% endif %}
+  {% if paneldata.dateviewed_quarter._is_selected %} date_trunc('quarter',paneldata.dateviewed), {% else %} {% endif %}
+  {% if paneldata.dateviewed_year._is_selected %} year(paneldata.dateviewed), {% else %} {% endif %}
+  {% if paneldata.daypart_viewed_hour_of_day._is_selected %} hour(paneldata.dateviewed), {% else %} {% endif %}
+  {% if paneldata.daypart_viewed_quarter_of_year._is_selected %} quarter(paneldata.dateviewed), {% else %} {% endif %}
+  {% if paneldata.daypart_viewed_day_of_week._is_selected %} DAYOFWEEKISO(paneldata.dateviewed), {% else %} {% endif %}
+  --------------metadata fields----------------
+  {% if metadata.image._is_selected %} {{metadata.image._name}}, {% else %} {% endif %}
+  {% if metadata.imdbid._is_selected %} {{metadata.imdbid._name}}, {% else %} {% endif %}
+  {% if metadata.nfdatefetched._is_selected %} to_date(metadata.nfdatefetched), {% else %} {% endif %}
+  {% if metadata.nfepisodeid._is_selected %} {{metadata.nfepisodeid._name}}, {% else %} {% endif %}
+  {% if metadata.nfepisodename._is_selected %} {{metadata.nfepisodename._name}}, {% else %} {% endif %}
+  {% if metadata.nfepisodenumber._is_selected %} {{metadata.nfepisodenumber._name}}, {% else %} {% endif %}
+  {% if metadata.nfseasonnumber._is_selected %} {{metadata.nfseasonnumber._name}}, {% else %} {% endif %}
+  {% if metadata.nftitleid._is_selected or metadata.nftitlename._is_selected %} {{metadata.nftitleid._name}}, {% else %} {% endif %}
+  {% if metadata.nfvideotype._is_selected %} {{metadata.nfvideotype._name}}, {% else %} {% endif %}
+  {% if metadata.unogsdate._is_selected %} to_date(metadata.unogsdate), {% else %} {% endif %}
+  ------------demoinfo fields--------------------
+  {% if demoinfo.demoid._is_selected %} {{demoinfo.demoid._name}}, {% else %} {% endif %}
+  1
+  );;
+  # hidden: yes
+}
 
-# parameter: selected_list_param {
-#   suggest_dimension: selected_list
-#   default_value: "{{ paneldata.selected_list }}"
-# }
 
-# measure: test_sum_streams {
-#   type: sum
-#   sql: ${reach_ndt.test_streams} ;;
-# }
 
 
   measure: streams {

@@ -43,6 +43,7 @@ view: weights {
     type: number
     sql: ${TABLE}."WEIGHT" ;;
     label: "Streams Weight"
+    hidden: yes
   }
 
   measure: count {

@@ -14,18 +14,10 @@ view: metadata {
     sql: ${TABLE}."IMDBID" ;;
   }
 
-  dimension_group: nfdatefetched {
-    type: time
-    timeframes: [
-      raw,
-      time,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
+  dimension: nfdatefetched {
+  type: date
     sql: ${TABLE}."NFDATEFETCHED" ;;
+    hidden: yes
   }
 
   dimension: nfepisodeid {
@@ -93,15 +85,8 @@ view: metadata {
     hidden: yes
   }
 
-  dimension_group: unogsdate {
-    type: time
-    timeframes: [
-      raw,
-      date,
-      year
-    ]
-    convert_tz: no
-    datatype: date
+  dimension: unogsdate {
+    type: date
     sql: ${TABLE}."UNOGSDATE" ;;
     label: "Netflix Release Date (UNOGS)"
   }
