@@ -91,5 +91,5 @@ view: reach_ndt {
   dimension: percentile {hidden:yes}
   dimension: selected_list {hidden:yes}
   dimension: bookmark_mins {hidden:yes}
-  dimension: frequency_episodes {}
+  dimension: frequency_episodes {hidden:yes}
 }
