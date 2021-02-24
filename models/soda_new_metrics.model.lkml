@@ -41,4 +41,9 @@ join: reach_ndt {
   relationship: one_to_one
 }
 
+join: reach_sample_date {
+  foreign_key: reach_ndt.selected_list
+  relationship: many_to_one
+}
+
 }

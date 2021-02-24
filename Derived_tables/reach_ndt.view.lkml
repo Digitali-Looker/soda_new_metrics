@@ -61,7 +61,7 @@ view: reach_ndt {
         sql: sum(weight) over (partition by selected_list order by dateviewed rows between unbounded preceding and current row) ;;
       }
       derived_column: total_streams {
-        sql: sum(weight) over (partition by selected_list) ;;
+        sql: sum(weight) over (partition by selected_list order by dateviewed rows between unbounded preceding and unbounded following) ;;
       }
       derived_column: percentile {
         sql: (running_streams/total_streams)*100 ;;
@@ -78,4 +78,6 @@ view: reach_ndt {
   dimension: weight {hidden:no}
   dimension: running_streams {hidden:no}
   dimension: total_streams {hidden:no}
+  dimension: percentile {}
+  dimension: selected_list {hidden:yes}
 }
