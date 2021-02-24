@@ -81,11 +81,30 @@ view: paneldata_ext {
 
 
 
+  measure: streams {
+    view_label: "CALCULATIONS"
+    group_label: "STREAMS"
+    label: "Streams"
+    value_format: "0"
+    type: sum
+    sql: ${weights.weight} ;;
+  }
 
 
-# dimension: selected_list {
+
+
+
+
+    }
+
+
+
+#### The issue with using a parameter is that unquoted one doesn't accept liquid syntax (says only letters, numbers, underscores and $ are allowed)
+#### When type string is builds it ok but wraps in quotes and no quoting combinations on default value or parameter value seem to undo that
+#### the result it that instead of a sql statement we end up with a single string called as selected_list field that then obviously doesn't do partitioning correctly
+# parameter: selected_list_test {
 #   type: string
-#   sql: concat_ws(', ',
+#   default_value:"concat_ws('', '',
 #   ---------paneldata fields --------------
 #   {% if paneldata.rid._is_selected %} {{paneldata.rid._name}}, {% else %} {% endif %}
 #   {% if paneldata.profileid._is_selected %} {{paneldata.profileid._name}}, {% else %} {% endif %}
@@ -116,25 +135,6 @@ view: paneldata_ext {
 #   ------------demoinfo fields--------------------
 #   {% if demoinfo.demoid._is_selected %} {{demoinfo.demoid._name}}, {% else %} {% endif %}
 #   1
-#   );;
+#   )"
 #   # hidden: yes
 # }
-
-
-
-
-  measure: streams {
-    view_label: "CALCULATIONS"
-    group_label: "STREAMS"
-    label: "Streams"
-    value_format: "0"
-    type: sum
-    sql: ${weights.weight} ;;
-  }
-
-
-
-
-
-
-    }
