@@ -33,6 +33,16 @@ view: paneldata_ext {
     }
   }
 
+# parameter: minutes_threshold {
+#   type: number
+#   view_label: "CALCULATIONS"
+#   label: "Minutes in a session for Reach calculations"
+#   # sql: {% condition minutes_threshold %} ${bookmark_mins} {% endcondition %};;
+#   default_value: "0"
+# }
+
+
+
 
 #-----------------REACH
 
@@ -49,7 +59,7 @@ view: paneldata_ext {
     # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
     sql_distinct_key:
       concat_ws(', ',${weights_reach.rid},${weights_reach.dateofactivity});;
-    sql: ${weights_reach.weight} ;;
+    sql: ${weights_reach.weight};;
     hidden: yes
   }
 

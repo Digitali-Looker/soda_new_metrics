@@ -44,11 +44,10 @@ view: reach_ndt {
         --------------metadata fields----------------
         {% if metadata.image._is_selected %} image, {% else %} {% endif %}
         {% if metadata.imdbid._is_selected %} imdbid, {% else %} {% endif %}
-        {% if metadata.nfdatefetched._is_selected %} to_date(nfdatefetched), {% else %} {% endif %}
-        {% if metadata.nfepisodeid._is_selected %} nfepisodeid, {% else %} {% endif %}
-        {% if metadata.nfepisodename._is_selected %} nfepisodename, {% else %} {% endif %}
-        {% if metadata.nfepisodenumber._is_selected %} nfepisodenumber, {% else %} {% endif %}
-        {% if metadata.nfseasonnumber._is_selected %} nfseasonnumber, {% else %} {% endif %}
+        {% if metadata.nfepisodeid._is_selected %} ifnull(nfepisodeid,1), {% else %} {% endif %}
+        {% if metadata.nfepisodename._is_selected %} ifnull(nfepisodename,1), {% else %} {% endif %}
+        {% if metadata.nfepisodenumber._is_selected %} ifnull(nfepisodenumber,1), {% else %} {% endif %}
+        {% if metadata.nfseasonnumber._is_selected %} ifnull(nfseasonnumber,1), {% else %} {% endif %}
         {% if metadata.nftitleid._is_selected or metadata.nftitlename._is_selected %} nftitleid, {% else %} {% endif %}
         {% if metadata.nfvideotype._is_selected %} nfvideotype, {% else %} {% endif %}
         {% if metadata.unogsdate._is_selected %} to_date(unogsdate), {% else %} {% endif %}
@@ -66,9 +65,20 @@ view: reach_ndt {
       derived_column: percentile {
         sql: (running_streams/total_streams)*100 ;;
       }
-
+      derived_column: frequency_eps_base {
+        sql: concat_ws(', ',nftitleid, ifnull(nfseasonnumber,1),ifnull(nfepisodenumber,1));;
+      }
+      derived_column: frequency_episodes {
+        sql: conditional_change_event(frequency_eps_base)
+        over (partition by
+        rid,
+        {% if paneldata.reach_account_granularity._parameter_value == "'profile'" %} profileid, {% else %} {% endif %}
+        selected_list order by
+        rid,
+        {% if paneldata.reach_account_granularity._parameter_value == "'profile'" %} profileid, {% else %} {% endif %}
+        dateviewed) ;;
+      }
       bind_all_filters: yes
-
     }
   }
   dimension: diid {hidden:yes
@@ -76,8 +86,10 @@ view: reach_ndt {
   dimension: rid {hidden:yes}
   dimension: profileid {hidden:yes}
   dimension: weight {hidden:no}
-  dimension: running_streams {hidden:no}
-  dimension: total_streams {hidden:no}
-  dimension: percentile {}
+  dimension: running_streams {hidden:yes}
+  dimension: total_streams {hidden:yes}
+  dimension: percentile {hidden:yes}
   dimension: selected_list {hidden:yes}
+  dimension: bookmark_mins {hidden:yes}
+  dimension: frequency_episodes {}
 }
