@@ -22,7 +22,7 @@ explore: paneldata  {
   and ${dateviewed_date}< '{{ _user_attributes['soda_new_metrics_date_end'] }}';;
 
 join: weights {
-  sql_on: ${paneldata.rid} = ${paneldata.rid} and ${paneldata.dateviewed_date} = ${weights.dateofactivity_date} ;;
+  sql_on: ${paneldata.rid} = ${weights.rid} and ${paneldata.dateviewed_date} = ${weights.dateofactivity_date} ;;
   relationship: many_to_one
 }
 
@@ -36,9 +36,9 @@ join: metadata {
   foreign_key: paneldata.FK_Metadata
 }
 
-# join: reach_ndt {
-#   foreign_key: paneldata.diid
-#   relationship: one_to_one
-# }
+join: reach_ndt {
+  foreign_key: paneldata.diid
+  relationship: one_to_one
+}
 
 }

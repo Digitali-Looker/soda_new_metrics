@@ -142,7 +142,7 @@ dimension: FK_Metadata {
 
 dimension: diid {
   sql: ${TABLE}."DIID" ;;
-  hidden: yes
+  # hidden: yes
 }
 
 }
