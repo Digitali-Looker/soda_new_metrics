@@ -29,9 +29,9 @@ and ${dateviewed_date}< '{{ _user_attributes['soda_new_metrics_date_end'] }}'
 join: metadata {
   from: ds_metadata_ext
   relationship: many_to_one
-  #sql_on: coalesce(${ds_paneldata.episodeid},${ds_paneldata.netflixid})=coalesce(${metadata.nfepisodeid},${metadata.nftitleid});;
+  sql_on: ${ds_paneldata.episodeid}=${metadata.nfepisodeid} and ${ds_paneldata.netflixid}${metadata.nftitleid};;
   ##coalesce above will allow titles that don't have episode info in API yet to at least provide title link, can be excluded by adding sql_always_where in the model
-  foreign_key: ds_paneldata.FK_Metadata
+  # foreign_key: ds_paneldata.FK_Metadata
 }
 
 ######------------- Weights are joined twice - from the full table directly to provide streams (take actual weight on the day of viewing, new panellist
