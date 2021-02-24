@@ -18,6 +18,70 @@ view: paneldata_ext {
   }
 
 
+###----This is the parameter for 2 ways of calculating Reach,
+##-----Reach is written in the way that by default it calcs on an account level, but adding this switch allows to chage to profile and back
+  parameter: reach_account_granularity {
+    view_label: "CALCULATIONS"
+    # default_value: "rid"
+    allowed_value: {
+      label: "Profile"
+      value: "profile"
+    }
+    allowed_value: {
+      label: "Account"
+      value: "rid"
+    }
+  }
+
+
+#-----------------REACH
+
+##-----Below calculations for Reach consist of 3 parts: 1 calculates Reach for account level, one - for Profile level,
+##-----and third is just a shell that decides which one to use depending on the parameter value
+
+
+###----for account level we sum weights of distinct pairs respondantid+sampledate (sample_date = dateofctivity brought through from weights_reach table)
+###----so this will allows us to avoid double-counting weights and as sample weight calculation is dynamic, the date breakdown will affect Reach accordingly
+
+  measure: Reach_Account {
+    value_format: "0"
+    type: sum_distinct
+    # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
+    sql_distinct_key:
+      concat_ws(', ',${weights_reach.rid},${weights_reach.dateofactivity});;
+    sql: ${weights_reach.weight} ;;
+    hidden: yes
+  }
+
+
+
+####----Same logic as above, except we add one more partitioning field - Profileid. So for each profile within the HH the weight will be counted once more
+  measure: Reach_Profile {
+    value_format: "0"
+    type: sum_distinct
+    # sql_distinct_key: concat_ws(', ',${ds_weights_reach_ext.rid},${ds_weights_reach_ext.dateofactivity_date}) ;;
+    sql_distinct_key:
+      concat_ws(', ',${weights_reach.rid},${weights_reach.profileid},${weights_reach.dateofactivity});;
+    sql: ${weights_reach.weight} ;;
+    hidden: yes
+  }
+
+
+
+
+##--If the parameter is set to profile reach will refer to Reach_Profile, in all other cases (including when parameter is not selected at all it will go to account lvl)
+  measure: Reach {
+    view_label: "CALCULATIONS"
+    group_label: "REACH"
+    value_format: "0"
+    type: number
+    sql: {% if reach_account_granularity._parameter_value == "'profile'" %} ${Reach_Profile} {% else %} ${Reach_Account} {% endif %} ;;
+    # html: {{value}} {{reach_account_granularity._parameter_value}} ;; ##This is just to check if liquid picks up the param value, for some reason it needed both sets of quotes around the value, which is weird
+  }
+
+
+
+
 
 # dimension: selected_list {
 #   type: string

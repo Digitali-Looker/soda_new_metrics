@@ -46,4 +46,9 @@ join: reach_sample_date {
   relationship: many_to_one
 }
 
+join: weights_reach {
+  sql_on: ${reach_ndt.rid}=${weights_reach.rid} and ${reach_ndt.profileid}=${weights_reach.profileid} and ${reach_sample_date.sample_date}=${weights_reach.dateofactivity} ;;
+  relationship: many_to_one
+}
+
 }
