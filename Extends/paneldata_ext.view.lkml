@@ -111,11 +111,17 @@ parameter: minutes_threshold {
 
 
 
-dimension: Reach_Frequency {
+dimension: Reach_Frequency_Episodes {
   sql: 'Reach' ;;
-  html: <a href="{{ link }}"><button>Reach by Frequency</button></a>;;
+  html: <a href="{{ link }}"><button>Reach by Number of Episodes </button></a>;;
   drill_fields: [reach_ndt.frequency_episodes,paneldata.Reach]
 }
+
+  dimension: Reach_Frequency_Sessions {
+    sql: 'Reach' ;;
+    html: <a href="{{ link }}"><button>Reach by Number of Sessions</button></a>;;
+    drill_fields: [reach_ndt.frequency_sessions,paneldata.Reach]
+  }
 
 
     }

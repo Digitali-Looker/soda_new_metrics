@@ -84,6 +84,17 @@ view: reach_ndt {
         {% if paneldata.minutes_threshold._parameter_value >"0" %} {% else %} +1 {% endif %}
        ;;
       }
+      derived_column: frequency_sessions {
+        sql: conditional_true_event(bookmark_mins>={% parameter paneldata.minutes_threshold %} )
+        over (partition by
+        rid,
+        {% if paneldata.reach_account_granularity._parameter_value == "'profile'" %} profileid, {% else %} {% endif %}
+        selected_list order by
+        rid,
+        {% if paneldata.reach_account_granularity._parameter_value == "'profile'" %} profileid, {% else %} {% endif %}
+        dateviewed) ;;
+        }
+
       bind_all_filters: yes
     }
   }
@@ -98,10 +109,18 @@ view: reach_ndt {
   dimension: selected_list {hidden:no}
   dimension: bookmark_mins {hidden:yes}
   dimension: frequency_episodes {hidden: yes
-    view_label:"CALCULATIONS"
+    view_label:""
     type: number
-    label:"Frequency (Number of Eps)"
+    label:"Frequency (Number of Episodes)"
     value_format: "0 \" +\""
     html: {% if {{value}} == 0 %} Below threshold {% else %} {{rendered_value}} {% endif %} ;;
     }
+  dimension: frequency_sessions {hidden: yes
+  view_label:""
+  type: number
+  label:"Frequency (Number of Sessions)"
+  value_format: "0 \" +\""
+  html: {% if {{value}} == 0 %} Below threshold {% else %} {{rendered_value}} {% endif %} ;;
+ }
+
 }
