@@ -87,7 +87,16 @@ parameter: minutes_threshold {
     type: number
     sql: {% if reach_account_granularity._parameter_value == "'profile'" %} ${Reach_Profile} {% else %} ${Reach_Account} {% endif %} ;;
     # html: {{value}} {{reach_account_granularity._parameter_value}} ;; ##This is just to check if liquid picks up the param value, for some reason it needed both sets of quotes around the value, which is weird
-  }
+    # link: {
+    #   label: "Reach x Frequency"
+    #   url: "https://digitali.eu.looker.com/explore/soda_new_metrics/paneldata?fields=paneldata.*._in_query,metadata.*._in_query,reach_ndt.frequency_episodes,paneldata.Reach&f[reach_ndt.selected_list]={{reach_ndt.selected_list._filterable_value| url_encode }}&toggle=fil"
+    # }
+    # link: {
+    #   label: "test"
+    #   url: "{{ link }}"
+    # }
+    # drill_fields: [Reach]
+ }
 
 
 
@@ -102,7 +111,11 @@ parameter: minutes_threshold {
 
 
 
-
+dimension: Reach_Frequency {
+  sql: 'Reach' ;;
+  html: <a href="{{ link }}"><button>Reach by Frequency</button></a>;;
+  drill_fields: [reach_ndt.frequency_episodes,paneldata.Reach]
+}
 
 
     }

@@ -95,9 +95,9 @@ view: reach_ndt {
   dimension: running_streams {hidden:yes}
   dimension: total_streams {hidden:yes}
   dimension: percentile {hidden:yes}
-  dimension: selected_list {hidden:yes}
+  dimension: selected_list {hidden:no}
   dimension: bookmark_mins {hidden:yes}
-  dimension: frequency_episodes {hidden:no
+  dimension: frequency_episodes {hidden: yes
     view_label:"CALCULATIONS"
     type: number
     label:"Frequency (Number of Eps)"
