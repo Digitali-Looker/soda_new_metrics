@@ -71,7 +71,8 @@ view: reach_ndt {
         sql: concat_ws(', ',nftitleid, ifnull(nfseasonnumber,1),ifnull(nfepisodenumber,1));;
       }
       derived_column: frequency_episodes {
-        sql: conditional_change_event(frequency_eps_base)
+        sql:
+        conditional_change_event(frequency_eps_base)
         over (partition by
         rid,
         {% if paneldata.reach_account_granularity._parameter_value == "'profile'" %} profileid, {% else %} {% endif %}
@@ -79,7 +80,9 @@ view: reach_ndt {
         rid,
         {% if paneldata.reach_account_granularity._parameter_value == "'profile'" %} profileid, {% else %} {% endif %}
         frequency_eps_base,
-        dateviewed)+1 ;;
+        dateviewed)
+        {% if paneldata.minutes_threshold._parameter_value >"0" %} {% else %} +1 {% endif %}
+       ;;
       }
       bind_all_filters: yes
     }
@@ -99,5 +102,6 @@ view: reach_ndt {
     type: number
     label:"Frequency (Number of Eps)"
     value_format: "0 \" +\""
+    html: {% if {{value}} == 0 %} Below threshold {% else %} {{rendered_value}} {% endif %} ;;
     }
 }
