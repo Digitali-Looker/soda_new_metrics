@@ -2,6 +2,7 @@ include: "/[!model]*/*"
 
 view: reach_ndt {
   derived_table: {
+    ########----This section should contain all visible fields that a user can potentially try to partition things by, however unlikely
     explore_source: paneldata{
       column: diid {field:paneldata.diid}
       column: rid {field:paneldata.rid}
@@ -24,6 +25,7 @@ view: reach_ndt {
       column: demoid {field:demoinfo.demoid}
       column: weight {field: weights.weight}
       derived_column: selected_list {
+        ##### Full list from above (except only diid) whould be reflected within this column
         sql: concat_ws(', ',
         ---------paneldata fields --------------
         {% if paneldata.rid._is_selected %} rid, {% else %} {% endif %}
@@ -76,7 +78,8 @@ view: reach_ndt {
         selected_list order by
         rid,
         {% if paneldata.reach_account_granularity._parameter_value == "'profile'" %} profileid, {% else %} {% endif %}
-        dateviewed) ;;
+        frequency_eps_base,
+        dateviewed)+1 ;;
       }
       bind_all_filters: yes
     }
@@ -91,5 +94,10 @@ view: reach_ndt {
   dimension: percentile {hidden:yes}
   dimension: selected_list {hidden:yes}
   dimension: bookmark_mins {hidden:yes}
-  dimension: frequency_episodes {hidden:yes}
+  dimension: frequency_episodes {hidden:no
+    view_label:"CALCULATIONS"
+    type: number
+    label:"Frequency (Number of Eps)"
+    value_format: "0 \" +\""
+    }
 }
