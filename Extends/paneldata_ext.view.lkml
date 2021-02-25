@@ -33,13 +33,13 @@ view: paneldata_ext {
     }
   }
 
-# parameter: minutes_threshold {
-#   type: number
-#   view_label: "CALCULATIONS"
-#   label: "Minutes in a session for Reach calculations"
-#   # sql: {% condition minutes_threshold %} ${bookmark_mins} {% endcondition %};;
-#   default_value: "0"
-# }
+parameter: minutes_threshold {
+  type: number
+  view_label: "CALCULATIONS"
+  label: "Minimum minutes in a session for Reach calculations (inclusive)"
+  # sql: {% condition minutes_threshold %} ${bookmark_mins} {% endcondition %};;
+  default_value: "0"
+}
 
 
 

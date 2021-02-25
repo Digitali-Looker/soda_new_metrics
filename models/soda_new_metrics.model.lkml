@@ -50,7 +50,8 @@ join: reach_sample_date {
 
 join: weights_reach {
   sql_on: ${reach_ndt.rid}=${weights_reach.rid} and ${reach_ndt.profileid}=${weights_reach.profileid}
-  and ${reach_sample_date.sample_date}=${weights_reach.dateofactivity};;
+  and ${reach_sample_date.sample_date}=${weights_reach.dateofactivity}
+  and ${paneldata.bookmark_mins}>={% parameter paneldata.minutes_threshold %};;
   relationship: many_to_one
 }
 
