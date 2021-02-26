@@ -96,7 +96,7 @@ parameter: sample_date_overwrite {
 parameter: minimum_frequency {
   type: number
   view_label: "CALCULATIONS"
-  default_value: "0"
+  default_value: "1"
 }
 
 
@@ -160,6 +160,7 @@ dimension: frequency{
       url: "{{ link }}"
     }
     drill_fields: [frequency,Reach]
+    html: {% if frequency._in_query and frequency._value == 0 %} Value not available {% else %} {{rendered_value}} {% endif %} ;;
  }
 
 
