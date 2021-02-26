@@ -49,19 +49,21 @@ join: reach_sample_date {
   relationship: many_to_one
 }
 
-join: weights_reach {
-  sql_on: ${reach_ndt.rid}=${weights_reach.rid} and ${reach_ndt.profileid}=${weights_reach.profileid}
-  and
-    {% if paneldata.sample_date_overwrite._is_filtered %} ${weights_reach.dateofactivity}={% parameter paneldata.sample_date_overwrite%}
-    {% else %}${reach_sample_date.sample_date}=${weights_reach.dateofactivity} {% endif %}
-  and ${paneldata.bookmark_mins}>={% parameter paneldata.minutes_threshold %};;
-  relationship: many_to_one
-}
-
   join: frequency_ndt {
     foreign_key: paneldata.diid
     # sql_on: ${paneldata.diid}=${reach_ndt.diid} and ${reach_ndt.bookmark_mins}>{% parameter paneldata.minutes_threshold %} ;;
     relationship: one_to_one
   }
+
+join: weights_reach {
+  sql_on: ${reach_ndt.rid}=${weights_reach.rid} and ${reach_ndt.profileid}=${weights_reach.profileid}
+  and
+    {% if paneldata.sample_date_overwrite._is_filtered %} ${weights_reach.dateofactivity}={% parameter paneldata.sample_date_overwrite%}
+    {% else %}${reach_sample_date.sample_date}=${weights_reach.dateofactivity} {% endif %}
+  and ${frequency_ndt.frequency_episodes}>={% parameter paneldata.minimum_frequency %};;
+  relationship: many_to_one
+}
+
+
 
 }

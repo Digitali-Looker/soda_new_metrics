@@ -80,9 +80,24 @@ parameter: sample_date_overwrite {
 
 
 
+  parameter: frequency_type {
+    default_value: "episodes"
+    allowed_value: {
+      label: "Number of sessions"
+      value: "sesions"
+    }
+    allowed_value: {
+      label: "Number of episodes"
+      value: "episodes"
+    }
+    view_label: "CALCULATIONS"
+  }
 
-
-
+parameter: minimum_frequency {
+  type: number
+  view_label: "CALCULATIONS"
+  default_value: "0"
+}
 
 
 #-----------------REACH
@@ -118,18 +133,7 @@ parameter: sample_date_overwrite {
   }
 
 
-parameter: frequency_type {
-  default_value: "episodes"
-  allowed_value: {
-    label: "Number of sessions"
-    value: "sesions"
-  }
-  allowed_value: {
-    label: "Number of episodes"
-    value: "episodes"
-  }
-  view_label: "CALCULATIONS"
-}
+
 
 
 dimension: frequency{
