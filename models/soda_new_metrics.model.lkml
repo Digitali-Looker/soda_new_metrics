@@ -58,4 +58,10 @@ join: weights_reach {
   relationship: many_to_one
 }
 
+  join: frequency_ndt {
+    foreign_key: paneldata.diid
+    # sql_on: ${paneldata.diid}=${reach_ndt.diid} and ${reach_ndt.bookmark_mins}>{% parameter paneldata.minutes_threshold %} ;;
+    relationship: one_to_one
+  }
+
 }

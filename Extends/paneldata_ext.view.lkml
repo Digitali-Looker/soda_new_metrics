@@ -79,6 +79,12 @@ parameter: sample_date_overwrite {
 }
 
 
+
+
+
+
+
+
 #-----------------REACH
 
 ##-----Below calculations for Reach consist of 3 parts: 1 calculates Reach for account level, one - for Profile level,
@@ -130,7 +136,7 @@ parameter: sample_date_overwrite {
     #   label: "test"
     #   url: "{{ link }}"
     # }
-    # drill_fields: [Reach]
+    drill_fields: [frequency_ndt.frequency_episodes,Reach]
  }
 
 
@@ -146,17 +152,19 @@ parameter: sample_date_overwrite {
 
 
 
-dimension: Reach_Frequency_Episodes {
-  sql: 'Reach' ;;
-  html: <a href="{{ link }}"><button>Reach by Number of Episodes </button></a>;;
-  drill_fields: [reach_ndt.frequency_episodes,paneldata.Reach]
-}
+#### tried to tie it all to 1 ndt but then we can't use frequency fields to drill or filter as it creates circular dependency
 
-  dimension: Reach_Frequency_Sessions {
-    sql: 'Reach' ;;
-    html: <a href="{{ link }}"><button>Reach by Number of Sessions</button></a>;;
-    drill_fields: [reach_ndt.frequency_sessions,paneldata.Reach]
-  }
+# dimension: Reach_Frequency_Episodes {
+#   sql: 'Reach' ;;
+#   html: <a href="{{ link }}"><button>Reach by Number of Episodes </button></a>;;
+#   drill_fields: [reach_ndt.frequency_episodes,paneldata.Reach]
+# }
+
+#   dimension: Reach_Frequency_Sessions {
+#     sql: 'Reach' ;;
+#     html: <a href="{{ link }}"><button>Reach by Number of Sessions</button></a>;;
+#     drill_fields: [reach_ndt.frequency_sessions,paneldata.Reach]
+#   }
 
 
     }

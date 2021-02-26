@@ -2,6 +2,7 @@ include: "/[!model]*/*"
 
 view: reach_ndt {
   derived_table: {
+    ########----This section should be exactly the same as in Reach_ndt table, if any changes are made in either, please make sure to mirror them!
     ########----This section should contain all visible fields that a user can potentially try to partition things by, however unlikely
     explore_source: paneldata{
       column: diid {field:paneldata.diid}
@@ -58,6 +59,9 @@ view: reach_ndt {
         1
         );;
       }
+      #####################   END OF SECTION
+      #
+      #####------Here is where reach/sample date business starts, these are not same as in frequency_ndt
       derived_column: running_streams {
         sql: sum(weight) over (partition by selected_list order by dateviewed rows between unbounded preceding and current row) ;;
       }
@@ -67,35 +71,6 @@ view: reach_ndt {
       derived_column: percentile {
         sql: TO_NUMERIC((running_streams/total_streams)*100) ;;
       }
-      derived_column: frequency_eps_base {
-        sql: concat_ws(', ',nftitleid, ifnull(nfseasonnumber,1),ifnull(nfepisodenumber,1));;
-      }
-      derived_column: frequency_episodes {
-        sql:
-        conditional_change_event(frequency_eps_base)
-        over (partition by
-        rid,
-        {% if paneldata.reach_account_granularity._parameter_value == "'profile'" %} profileid, {% else %} {% endif %}
-        selected_list order by
-        rid,
-        {% if paneldata.reach_account_granularity._parameter_value == "'profile'" %} profileid, {% else %} {% endif %}
-        frequency_eps_base,
-        dateviewed)
-        {% if paneldata.minutes_threshold._parameter_value >"0" %} {% else %} +1 {% endif %}
-       ;;
-      }
-      derived_column: frequency_sessions {
-        sql: ---conditional_true_event(bookmark_mins>={% parameter paneldata.minutes_threshold %} )
-        row_number()
-        over (partition by
-        rid,
-        {% if paneldata.reach_account_granularity._parameter_value == "'profile'" %} profileid, {% else %} {% endif %}
-        selected_list order by
-        rid,
-        {% if paneldata.reach_account_granularity._parameter_value == "'profile'" %} profileid, {% else %} {% endif %}
-        dateviewed) ;;
-        }
-
       bind_all_filters: yes
     }
   }
@@ -109,19 +84,6 @@ view: reach_ndt {
   dimension: percentile {hidden:yes}
   dimension: selected_list {hidden:no}
   dimension: bookmark_mins {hidden:yes}
-  dimension: frequency_episodes {hidden: yes
-    view_label:""
-    type: number
-    label:"Frequency (Number of Episodes)"
-    value_format: "0 \" +\""
-    html: {% if {{value}} == 0 %} Below threshold {% else %} {{rendered_value}} {% endif %} ;;
-    }
-  dimension: frequency_sessions {hidden: yes
-  view_label:""
-  type: number
-  label:"Frequency (Number of Sessions)"
-  value_format: "0 \" +\""
-  html: {% if {{value}} == 0 %} Below threshold {% else %} {{rendered_value}} {% endif %} ;;
- }
+
 
 }
