@@ -151,10 +151,10 @@ dimension: frequency{
     type: number
     sql: {% if reach_account_granularity._parameter_value == "'profile'" %} ${Reach_Profile} {% else %} ${Reach_Account} {% endif %} ;;
     # html: {{value}} {{reach_account_granularity._parameter_value}} ;; ##This is just to check if liquid picks up the param value, for some reason it needed both sets of quotes around the value, which is weird
-    # link: {
-    #   label: "test"
-    #   url: "{{ link }}"
-    # }
+    link: {
+      label: "Reach x Frequency"
+      url: "{{ link }}"
+    }
     drill_fields: [frequency,Reach]
  }
 
