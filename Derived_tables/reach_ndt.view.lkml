@@ -65,7 +65,7 @@ view: reach_ndt {
         sql: sum(weight) over (partition by selected_list order by dateviewed rows between unbounded preceding and unbounded following) ;;
       }
       derived_column: percentile {
-        sql: (running_streams/total_streams)*100 ;;
+        sql: TO_NUMERIC((running_streams/total_streams)*100) ;;
       }
       derived_column: frequency_eps_base {
         sql: concat_ws(', ',nftitleid, ifnull(nfseasonnumber,1),ifnull(nfepisodenumber,1));;

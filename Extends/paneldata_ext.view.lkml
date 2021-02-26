@@ -8,6 +8,10 @@ view: paneldata_ext {
     extends: [paneldata]
     view_label: "PANELDATA"
 
+
+
+#################### ---- FILTERS AND PARAMETERS
+
   filter: date_viewed {
     view_label: "CALCULATIONS"
     type: date
@@ -42,6 +46,31 @@ parameter: minutes_threshold {
 }
 
 
+parameter: percentile_selection {
+  type: number
+  default_value: "50"
+  allowed_value: {
+    label: "25"
+    value: "25"
+  }
+  allowed_value: {
+    label: "50"
+    value: "50"
+  }
+  allowed_value: {
+    label: "75"
+    value: "75"
+  }
+  allowed_value: {
+    label: "100"
+    value: "100"
+  }
+  view_label: "CALCULATIONS"
+  label: "Manual overwrite of the default percentile(50) for sample date configuration"
+  description: "Sample date is selected based on the day when accumulation of streams for the item
+  (row in your data-table, i.e. title, season of a title, date breakdown or a combination of a few dimensions)
+  hit the desired % of total (percentile in this selection). Default is 50 - middle of the streams accumulation trend."
+}
 
 
 #-----------------REACH
