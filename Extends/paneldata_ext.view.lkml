@@ -118,6 +118,29 @@ parameter: sample_date_overwrite {
   }
 
 
+parameter: frequency_type {
+  default_value: "episodes"
+  allowed_value: {
+    label: "Number of sessions"
+    value: "sesions"
+  }
+  allowed_value: {
+    label: "Number of episodes"
+    value: "episodes"
+  }
+  view_label: "CALCULATIONS"
+}
+
+
+dimension: frequency{
+  sql: {% if frequency_type._parameter_value == "'episodes'" %} ${frequency_ndt.frequency_episodes} {% else %} ${frequency_ndt.frequency_sessions} {% endif %} ;;
+  type: number
+  label:"Frequency (Number of Sessions)"
+  value_format: "0 \" +\""
+  html: {% if {{value}} == 0 %} Below threshold {% else %} {{rendered_value}} {% endif %} ;;
+  view_label: "CALCULATIONS"
+  description: "Number of Episodes as a default type, add a frequency type parameter to change to number of sessions. Please use only to evaluate Reach breakdown and avoid adding other measures into the table with frequency."
+}
 
 
 ##--If the parameter is set to profile reach will refer to Reach_Profile, in all other cases (including when parameter is not selected at all it will go to account lvl)
@@ -129,14 +152,10 @@ parameter: sample_date_overwrite {
     sql: {% if reach_account_granularity._parameter_value == "'profile'" %} ${Reach_Profile} {% else %} ${Reach_Account} {% endif %} ;;
     # html: {{value}} {{reach_account_granularity._parameter_value}} ;; ##This is just to check if liquid picks up the param value, for some reason it needed both sets of quotes around the value, which is weird
     # link: {
-    #   label: "Reach x Frequency"
-    #   url: "https://digitali.eu.looker.com/explore/soda_new_metrics/paneldata?fields=paneldata.*._in_query,metadata.*._in_query,reach_ndt.frequency_episodes,paneldata.Reach&f[reach_ndt.selected_list]={{reach_ndt.selected_list._filterable_value| url_encode }}&toggle=fil"
-    # }
-    # link: {
     #   label: "test"
     #   url: "{{ link }}"
     # }
-    drill_fields: [frequency_ndt.frequency_episodes,Reach]
+    drill_fields: [frequency,Reach]
  }
 
 
