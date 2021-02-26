@@ -19,7 +19,8 @@ explore: paneldata  {
 
   sql_always_where: ${rid} in (select distinct rid from core.weights)
   and ${dateviewed_date}>= '{{ _user_attributes['soda_new_metrics_date_start'] }}'
-  and ${dateviewed_date}< '{{ _user_attributes['soda_new_metrics_date_end'] }}';;
+  and ${dateviewed_date}< '{{ _user_attributes['soda_new_metrics_date_end'] }}'
+  and ${bookmark_mins}>={% parameter paneldata.minutes_threshold %};;
 
 join: weights {
   sql_on: ${paneldata.rid} = ${weights.rid} and ${paneldata.dateviewed_date} = ${weights.dateofactivity_date} ;;

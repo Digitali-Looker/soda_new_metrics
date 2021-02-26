@@ -85,7 +85,8 @@ view: reach_ndt {
        ;;
       }
       derived_column: frequency_sessions {
-        sql: conditional_true_event(bookmark_mins>={% parameter paneldata.minutes_threshold %} )
+        sql: ---conditional_true_event(bookmark_mins>={% parameter paneldata.minutes_threshold %} )
+        row_number()
         over (partition by
         rid,
         {% if paneldata.reach_account_granularity._parameter_value == "'profile'" %} profileid, {% else %} {% endif %}
