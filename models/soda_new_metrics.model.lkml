@@ -51,7 +51,9 @@ join: reach_sample_date {
 
 join: weights_reach {
   sql_on: ${reach_ndt.rid}=${weights_reach.rid} and ${reach_ndt.profileid}=${weights_reach.profileid}
-  and ${reach_sample_date.sample_date}=${weights_reach.dateofactivity}
+  and
+    {% if paneldata.sample_date_overwrite._is_filtered %} ${weights_reach.dateofactivity}={% parameter paneldata.sample_date_overwrite%}
+    {% else %}${reach_sample_date.sample_date}=${weights_reach.dateofactivity} {% endif %}
   and ${paneldata.bookmark_mins}>={% parameter paneldata.minutes_threshold %};;
   relationship: many_to_one
 }

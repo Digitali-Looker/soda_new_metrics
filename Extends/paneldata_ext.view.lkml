@@ -72,6 +72,12 @@ parameter: percentile_selection {
   hit the desired % of total (percentile in this selection). Default is 50 - middle of the streams accumulation trend."
 }
 
+parameter: sample_date_overwrite {
+  type: date
+  view_label: "CALCULATIONS"
+  label: "Sample Date Overwrite"
+}
+
 
 #-----------------REACH
 
