@@ -74,11 +74,11 @@ view: frequency_ndt {
         {% if paneldata.reach_account_granularity._parameter_value == "'profile'" %} profileid, {% else %} {% endif %}
         frequency_eps_base,
         dateviewed)
-        {% if paneldata.minutes_threshold._parameter_value >"0" %} {% else %} +1 {% endif %}
+        +1
        ;;
       }
       derived_column: frequency_sessions {
-        sql: ---conditional_true_event(bookmark_mins>={% parameter paneldata.minutes_threshold %} )
+        sql:
         row_number()
                   over (partition by
                   rid,

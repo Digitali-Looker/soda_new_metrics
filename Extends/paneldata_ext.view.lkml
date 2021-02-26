@@ -93,6 +93,7 @@ parameter: sample_date_overwrite {
     view_label: "CALCULATIONS"
   }
 
+######Keeping minimum frequency to 1 allows to avoid having s below threshold value when minutes are limited through the filter
 parameter: minimum_frequency {
   type: number
   view_label: "CALCULATIONS"
@@ -155,12 +156,12 @@ dimension: frequency{
     type: number
     sql: {% if reach_account_granularity._parameter_value == "'profile'" %} ${Reach_Profile} {% else %} ${Reach_Account} {% endif %} ;;
     # html: {{value}} {{reach_account_granularity._parameter_value}} ;; ##This is just to check if liquid picks up the param value, for some reason it needed both sets of quotes around the value, which is weird
+    drill_fields: [frequency,Reach]
     link: {
       label: "Reach x Frequency"
       url: "{{ link }}"
     }
-    drill_fields: [frequency,Reach]
-    html: {% if frequency._in_query and frequency._value == 0 %} Value not available {% else %} {{rendered_value}} {% endif %} ;;
+    # html: {% if frequency._is_selected and frequency._value == 0 %} Value not available {% else %} {{rendered_value}} {% endif %} ;;
  }
 
 
