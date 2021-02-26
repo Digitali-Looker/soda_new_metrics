@@ -15,5 +15,6 @@ GROUP BY 1
     }
 dimension: selected_list {hidden:yes
   primary_key:yes}
-dimension: sample_date {hidden:no}
+dimension: sample_date {hidden:yes
+  }
   }

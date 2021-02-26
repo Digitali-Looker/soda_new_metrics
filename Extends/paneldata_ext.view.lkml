@@ -93,7 +93,7 @@ parameter: sample_date_overwrite {
     view_label: "CALCULATIONS"
   }
 
-######Keeping minimum frequency to 1 allows to avoid having s below threshold value when minutes are limited through the filter
+
 parameter: minimum_frequency {
   type: number
   view_label: "CALCULATIONS"
@@ -102,6 +102,15 @@ parameter: minimum_frequency {
 
 
 #-----------------REACH
+
+
+dimension: sample_date {
+  sql: {% if paneldata.sample_date_overwrite._is_filtered %} {% parameter paneldata.sample_date_overwrite%}
+    {% else %} ${reach_sample_date.sample_date} {% endif %} ;;
+    view_label: "CALCULATIONS"
+    type: date
+}
+
 
 ##-----Below calculations for Reach consist of 3 parts: 1 calculates Reach for account level, one - for Profile level,
 ##-----and third is just a shell that decides which one to use depending on the parameter value
