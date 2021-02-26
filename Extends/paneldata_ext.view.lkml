@@ -139,7 +139,7 @@ parameter: minimum_frequency {
 dimension: frequency{
   sql: {% if frequency_type._parameter_value == "'episodes'" %} ${frequency_ndt.frequency_episodes} {% else %} ${frequency_ndt.frequency_sessions} {% endif %} ;;
   type: number
-  label:"Frequency (Number of Sessions)"
+  label:"Frequency"
   value_format: "0 \" +\""
   html: {% if {{value}} == 0 %} Below threshold {% else %} {{rendered_value}} {% endif %} ;;
   view_label: "CALCULATIONS"

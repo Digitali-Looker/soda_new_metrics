@@ -60,7 +60,10 @@ join: weights_reach {
   and
     {% if paneldata.sample_date_overwrite._is_filtered %} ${weights_reach.dateofactivity}={% parameter paneldata.sample_date_overwrite%}
     {% else %}${reach_sample_date.sample_date}=${weights_reach.dateofactivity} {% endif %}
-  and ${frequency_ndt.frequency_episodes}>={% parameter paneldata.minimum_frequency %};;
+  and
+  {% if paneldata.frequency_type._parameter_value == "'episodes'" %}
+  ${frequency_ndt.frequency_episodes}>={% parameter paneldata.minimum_frequency %}
+  {% else %} ${frequency_ndt.frequency_sessions}>={% parameter paneldata.minimum_frequency %} {% endif %};;
   relationship: many_to_one
 }
 
